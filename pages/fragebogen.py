@@ -1,8 +1,5 @@
 import streamlit as st
 import pandas as pd
-from menu import menu_mit_fragebogen
-
-menu_mit_fragebogen()
 
 st.title("Fragebogen")
 st.write("Seite 1/X")

@@ -1,28 +1,20 @@
 import streamlit as st
+import pandas as pd
+
 from menu import default_menu
 
+data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
+
 pg = st.navigation([
-    st.Page("pages/visualisierung.py", default=True),
-    st.Page("pages/user_management.py"),
-    st.Page("pages/kompetenzbeurteilung.py"),
-    st.Page("pages/admin.py"),
-    st.Page("pages/debug.py"),
-    st.Page("pages/fragebogen.py")
+    st.Page("pages/visualisierung.py", title="Visualisierung", default=True),
+    st.Page("pages/user_management.py", title="User Management"),
+    st.Page("pages/kompetenzbeurteilung.py", title="Kompetenzbeurteilung"),
+    st.Page("pages/admin.py", title="Admin"),
+    st.Page("pages/debug.py", title="Debug"),
+    st.Page("pages/fragebogen.py", title="Fragebogen"),
+    st.Page("pages/kompetenzen_festlegen.py", title="Kompetenzen festlegen")
 ], position="hidden")
 
 pg.run()
 
 default_menu()
-
-#with st.sidebar:
-#    st.title("Fenster:")
-#    if st.button("Visualisierung"):
-#        st.switch_page(st.Page(visualisierung))
-#    if st.button("User Management"):
-#        st.switch_page(st.Page(user_management))
-#    if st.button("Kompetenzbeurteilung"):
-#        st.switch_page(st.Page("kompetenzbeurteilung.py"))
-#    if st.button("Admin"):
-#        st.switch_page(st.Page(admin))
-#    if st.button("Debug"):
-#        st.switch_page(st.Page(debug))
