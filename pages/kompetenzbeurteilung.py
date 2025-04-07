@@ -8,6 +8,9 @@ data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
 name_active_mitarbeiter = st.selectbox("Welcher MA soll beurteilt werden?", data_mitarbeiter[["Name"]])
 id_active_mitarbeiter = data_mitarbeiter.index[data_mitarbeiter["Name"] == name_active_mitarbeiter][0]
 
+if 'id_active_mitarbeiter' not in st.session_state:
+    st.session_state.id_active_mitarbeiter = id_active_mitarbeiter
+
 if data_mitarbeiter.loc[id_active_mitarbeiter, "Initialisiert"]:
     st.write("Für den Mitarbeiter wurde bereits eine initiale Bewertung erstellt.")
 else:
