@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+from menu import default_menu
+
+default_menu()
 
 st.title("Kompetenzbeurteilung")
 
