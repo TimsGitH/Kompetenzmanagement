@@ -23,10 +23,10 @@ st.write("\n")
 
 st.write("Wie möchten Sie Daten aufnehmen?")
 
-links, rechts = st.columns(2)
-with links:
-    if st.button("Fragebogen ausfüllen"):
+left, right = st.columns(2)
+with left:
+    if st.button(label="Fragebogen ausfüllen"):
         st.switch_page("pages/fragebogen.py")
-with rechts:
-    if st.button("Kompetenzen manuell festlegen"):
+with right:
+    if st.button(label="Kompetenzen manuell festlegen"):
         st.switch_page("pages/kompetenzen_festlegen.py")
