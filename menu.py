@@ -7,11 +7,18 @@ def click_back_button_1():
 def click_cancel_button():
     del st.session_state.warning
 
+def delete_session_state():
+    for key in st.session_state.keys():
+        del st.session_state[key]
+
 # -Menüs / Seitenleisten-
 def debug_menu():
+    for i in range(5):
+        st.sidebar.write("\n")
     st.sidebar.header("Debug")
     st.sidebar.write("Session State:")
     st.sidebar.write(st.session_state)
+    st.sidebar.button(label="Session State löschen", on_click=delete_session_state)
     st.sidebar.page_link("pages/visualisierung.py", label="Zurück zu Visualisierung")
 
 def default_menu():
@@ -31,8 +38,7 @@ def no_menu():
         st.sidebar.warning("Änderungen werden nicht gespeichert!")
         st.sidebar.button(label="Abbrechen", on_click=click_cancel_button)
         if st.sidebar.button(label="Trotzdem Zurück"):
-            for key in st.session_state.keys():
-                del st.session_state[key]
+            delete_session_state()
             st.switch_page("pages/kompetenzbeurteilung.py")
     else:
         st.sidebar.error("Error")

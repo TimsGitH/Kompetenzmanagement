@@ -8,7 +8,7 @@ no_menu()
 
 st.title("Kompetenzen festlegen")
 
-level_kompetenzen= (0, 1, 2, 3, 4)
+level_kompetenzen= (1, 2, 4, 5, 5)
 
 antworten = st.select_slider(label="Kompetenz 1", options=level_kompetenzen)
-st.radio(label="Kompetenz 2", options=level_kompetenzen, horizontal=True)
+st.radio(label="Kompetenz 2", options=level_kompetenzen, index=None, horizontal=True)
