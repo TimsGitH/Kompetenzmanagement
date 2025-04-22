@@ -6,9 +6,16 @@ st.set_page_config(page_title="User Management")
 
 default_menu()
 
+# -Tabelle für Mitarbeiter verknüpfen-
 data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
+
+# -Tabelle für Antworten verknüpfen-
+answers = pd.read_csv("antworten/Antworten.csv")
 
 st.title("User Management")
 
 st.write("Vorhandene Nutzer:")
 st.write(data_mitarbeiter)
+
+st.write("Ausgefüllte Fragebögen:")
+st.write(answers)

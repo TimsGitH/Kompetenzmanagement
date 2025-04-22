@@ -1,5 +1,6 @@
-Mitarbeiter-ID,Name,Initialisiert
-101,Clara,False
-102,Marie,False
-103,Peter,True
-104,Tim,False
+Mitarbeiter-ID,Name
+101,Clara
+102,Marie
+103,Peter
+104,Tim
+105,Jürgen
