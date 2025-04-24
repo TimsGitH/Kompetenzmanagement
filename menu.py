@@ -1,4 +1,6 @@
 import streamlit as st
+import pandas as pd
+import os
 
 # -Button Funktionen-
 def click_back_button_1():
@@ -11,6 +13,14 @@ def delete_session_state():
     for key in st.session_state.keys():
         del st.session_state[key]
 
+# -Leere Tabelle für Antworten erstellen, falls keine existiert-
+def create_empty_answers_dataframe():
+    answers_path = "antworten/Antworten.csv"
+    if not os.path.exists(answers_path):
+        column_names = ["Speicherzeitpunkt", "Mitarbeiter-ID"]
+        answers = pd.DataFrame(columns=column_names)
+        answers.to_csv(answers_path, index_label="Fragebogen-ID")
+
 # -Menüs / Seitenleisten-
 def debug_menu():
     for i in range(5):
@@ -19,6 +29,7 @@ def debug_menu():
     st.sidebar.write("Session State:")
     st.sidebar.write(st.session_state)
     st.sidebar.button(label="Session State löschen", on_click=delete_session_state)
+    st.sidebar.button(label="Leere Tabelle für Antworten erstellen", on_click=create_empty_answers_dataframe)
     st.sidebar.page_link("pages/visualisierung.py", label="Zurück zu Visualisierung")
 
 def default_menu():

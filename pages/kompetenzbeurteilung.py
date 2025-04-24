@@ -10,6 +10,7 @@ data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
 # -Tabelle für Antworten verknüpfen-
 answers = pd.read_csv("antworten/Antworten.csv")
 
+# -Mitarbeiter auswählen-
 def selectbox():
     st.session_state.id_active_mitarbeiter = data_mitarbeiter.index[data_mitarbeiter["Name"] == st.session_state.selected_mitarbeiter][0]
     st.session_state.name_active_mitarbeiter = st.session_state.selected_mitarbeiter
@@ -24,7 +25,7 @@ if "id_active_mitarbeiter" in st.session_state:
     #if data_mitarbeiter.loc[st.session_state.id_active_mitarbeiter, "Initialisiert"]:
         st.write("Für den Mitarbeiter wurde bereits ein Fragebogen ausgefüllt.")
     elif amount_answered_forms > 1:
-        st.write(f"Für den Mitarbeiter wurden bereits {amount_answered_forms} Fragebogen ausgefüllt.")
+        st.write(f"Für den Mitarbeiter wurden bereits {amount_answered_forms} Fragebögen ausgefüllt.")
     else:
         st.write("Für den Mitarbeiter wurde noch kein Fragebogen ausgefüllt.")
 

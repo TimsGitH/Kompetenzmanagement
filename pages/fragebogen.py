@@ -13,9 +13,6 @@ data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
 # -Fragebogen einlesen-
 fragebogen = pd.read_csv("fragebögen/Messinstrument_V01_aufbereitet.CSV", sep=';', encoding='utf-8')
 
-# -Tabelle für Antworten verknüpfen-
-answers = pd.read_csv("antworten/Antworten.csv")
-
 # -Funktionen-
 def click_continue():
     st.session_state.page += 1
@@ -24,22 +21,34 @@ def click_back():
     st.session_state.page -= 1
 
 def submit_form():
-    datetime = dt.datetime.now()
+    # -Tabelle für Antworten verknüpfen-
+    answers = pd.read_csv("antworten/Antworten.csv", index_col="Fragebogen-ID")
+
+    # -Tabelle initialisieren-
+    questionnaire_id = len(answers)
     data_new_answers = {
-        "Datum": [datetime.strftime("%x %X")],
+        "Speicherzeitpunkt": [dt.datetime.now()],
         "Mitarbeiter-ID": [st.session_state.id_active_mitarbeiter]
     }
     new_answers = pd.DataFrame(data_new_answers)
+    new_answers.index = [questionnaire_id]
+
+    # -Antworten eintragen-
     for i in range(amount_questions):
         if fragebogen.loc[i, "invertiert"] is True:
-            new_answers.loc[0, fragebogen.loc[i, "Code"]] = translate_answer_inverted[st.session_state[fragebogen.loc[i, "Code"]]]
+            new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = translate_answer_inverted[st.session_state[fragebogen.loc[i, "Code"]]]
         else:
-            new_answers.loc[0, fragebogen.loc[i, "Code"]] = translate_answer[st.session_state[fragebogen.loc[i, "Code"]]]
-    combined_answers = pd.concat([answers, new_answers], ignore_index=True)
-    combined_answers.to_csv("antworten/Antworten.csv")
+            new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = translate_answer[st.session_state[fragebogen.loc[i, "Code"]]]
+
+    # -Tabellen kombinieren-
+    combined_answers = pd.concat([answers, new_answers], axis=0)
+    combined_answers.to_csv("antworten/Antworten.csv", index_label="Fragebogen-ID")
+
+    # -Session States aufräumen-
     del st.session_state.page
     del st.session_state.id_active_mitarbeiter
     del st.session_state.name_active_mitarbeiter
+
 
 # -Mögliche Antworten für die Fragen (trifft zu entspricht 1, trifft nicht zu entspricht 5)
 options_form= ("trifft nicht zu", "trifft eher nicht zu", "teils-teils", "trifft eher zu", "trifft zu")
@@ -85,10 +94,6 @@ if 'page' not in st.session_state:
     st.session_state.page = 1
 st.progress((st.session_state.page - 1) / amount_pages, text="Fortschritt Fragebogen")
 
-# -Fragen ausgeben-
-st.header("Fragen:")
-st.write(fragebogen)
-
 # -Fragebogen-
 with st.form("Fragebogen"):
     if st.session_state.page < amount_pages:
@@ -102,11 +107,11 @@ with st.form("Fragebogen"):
     st.write(f"Seite {st.session_state.page} von {amount_pages}")
     left, right = st.columns(2)
     if st.session_state.page < amount_pages:
-        continue_button = left.form_submit_button(label="Weiter", on_click=click_continue)
+        continue_button = right.form_submit_button(label="Weiter", on_click=click_continue)
     else:
-        submit_button = left.form_submit_button(label="Fragebogen abschließen")
+        submit_button = right.form_submit_button(label="Fragebogen abschließen")
         if submit_button:
             submit_form()
             st.switch_page("pages/kompetenzbeurteilung.py")
     if st.session_state.page > 1:
-        back_button = right.form_submit_button(label="Zurück", on_click=click_back)
+        back_button = left.form_submit_button(label="Zurück", on_click=click_back)
