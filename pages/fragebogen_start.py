@@ -28,9 +28,7 @@ if set_id_active_mitarbeiter is not None:
         set_name_active_mitarbeiter = st.text_input(label="Mitarbeiter Name")
         confirm_new_mitarbeiter = st.button(label="Mitarbeiter anlegen")
         if confirm_new_mitarbeiter:
-            st.session_state.id_active_mitarbeiter = set_id_active_mitarbeiter
-            st.session_state.name_active_mitarbeiter = set_name_active_mitarbeiter
-            data_mitarbeiter.loc[st.session_state.id_active_mitarbeiter, "Name"] = st.session_state.name_active_mitarbeiter
+            data_mitarbeiter.loc[set_id_active_mitarbeiter, "Name"] = set_name_active_mitarbeiter
             data_mitarbeiter.to_csv("user_management/mitarbeiter.csv", sep=';', index_label="Mitarbeiter-ID")
             st.rerun(scope="app")
 st.markdown('#')
