@@ -18,12 +18,14 @@ st.selectbox(label="Bitte wählen Sie ihre Rolle aus:", options=["Mitarbeiter", 
 st.checkbox(label="Debug Modus", key="selected_debug_mode")
 confirm_button = st.button(label="Bestätigen & Weiter")
 if confirm_button:
-    st.session_state.role = st.session_state.selected_role
-    st.session_state.debug_mode = st.session_state.selected_debug_mode
-    if st.session_state.role == "Mitarbeiter":
+    if st.session_state.selected_role == "Mitarbeiter":
+        st.session_state.role = st.session_state.selected_role
+        st.session_state.debug_mode = st.session_state.selected_debug_mode
         clear_session_states_except_role_and_debug_mode()
         st.switch_page("pages/fragebogen_start.py")
-    elif st.session_state.role == "Admin":
+    elif st.session_state.selected_role == "Admin":
+        st.session_state.role = st.session_state.selected_role
+        st.session_state.debug_mode = st.session_state.selected_debug_mode
         clear_session_states_except_role_and_debug_mode()
         st.switch_page("pages/visualisierung.py")
     else:

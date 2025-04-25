@@ -17,10 +17,13 @@ def debug_menu():
         st.sidebar.write("Session State:")
         st.sidebar.write(st.session_state)
         st.sidebar.button(label="Session State löschen (Außer Rolle & Debug Modus)", on_click=clear_session_states_except_role_and_debug_mode)
+        st.sidebar.button(label="Session State vollständig löschen", on_click=clear_session_states)
         st.sidebar.button(label="Leere Tabelle für Antworten erstellen", on_click=create_empty_answers_dataframe)
         st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
 
 def default_menu():
+    if "role" not in st.session_state:
+        st.switch_page("streamlit_app.py")
     st.sidebar.header("Navigation")
     st.sidebar.page_link("pages/visualisierung.py", label="Visualisierung")
     st.sidebar.page_link("pages/user_management.py", label="User Management")
@@ -30,6 +33,8 @@ def default_menu():
     debug_menu()
 
 def no_menu():
+    if "role" not in st.session_state:
+        st.switch_page("streamlit_app.py")
     if st.session_state.role == "Admin":
         if "warning" not in st.session_state:
             st.sidebar.button(label="Zurück", use_container_width=True, on_click=click_back_button_1)
