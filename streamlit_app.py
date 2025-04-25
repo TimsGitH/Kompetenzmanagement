@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 from initialize import create_empty_answers_dataframe
 
 st.set_option("client.showSidebarNavigation", False)
