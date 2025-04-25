@@ -7,11 +7,12 @@ st.set_page_config(page_title="Fragebogen")
 no_menu()
 
 # -Mitarbeiterdaten einlesen-
-data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
+data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
 
 # -Titel-
 st.title("Fragebogen")
-set_id_active_mitarbeiter = st.number_input(label="Mitarbeiter-ID angeben (max 3 Ziffern):", min_value=1, max_value=999, value=None)
+set_id_active_mitarbeiter = st.number_input(label="Mitarbeiter-ID (zwischen 101 und 999):", min_value=101, max_value=999, value=None)
+st.button(label="Bestätigen")
 if set_id_active_mitarbeiter is not None:
     set_id_active_mitarbeiter = int(set_id_active_mitarbeiter)
     if set_id_active_mitarbeiter in data_mitarbeiter.index:
@@ -27,4 +28,10 @@ if set_id_active_mitarbeiter is not None:
         set_name_active_mitarbeiter = st.text_input(label="Mitarbeiter Name")
         confirm_new_mitarbeiter = st.button(label="Mitarbeiter anlegen")
         if confirm_new_mitarbeiter:
-            pass
+            st.session_state.id_active_mitarbeiter = set_id_active_mitarbeiter
+            st.session_state.name_active_mitarbeiter = set_name_active_mitarbeiter
+            data_mitarbeiter.loc[st.session_state.id_active_mitarbeiter, "Name"] = st.session_state.name_active_mitarbeiter
+            data_mitarbeiter.to_csv("user_management/mitarbeiter.csv", sep=';', index_label="Mitarbeiter-ID")
+            st.rerun(scope="app")
+st.markdown('#')
+st.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")

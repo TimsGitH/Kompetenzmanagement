@@ -1,6 +1,5 @@
-Mitarbeiter-ID,Name
-101,Clara
-102,Marie
-103,Peter
-104,Tim
-105,Jürgen
+Mitarbeiter-ID;Name
+101;Clara
+102;Marie
+103;Peter
+104;Tim

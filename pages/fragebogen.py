@@ -9,22 +9,38 @@ st.set_page_config(page_title="Fragebogen")
 no_menu()
 
 # -Mitarbeiterdaten einlesen-
-data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
+data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
 
 # -Fragebogen einlesen-
 fragebogen = pd.read_csv("fragebögen/25-04-25_Itemübersicht_Befragungsinstrument_CSV_UTF8.CSV", sep=';', encoding='utf-8')
 
 # -Funktionen-
+def check_none_answers():
+    none_counter = 0
+    for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
+        if st.session_state[fragebogen.loc[i, "Code"]] is None:
+            none_counter += 1
+    if none_counter == 0:
+        if "none_error" in st.session_state:
+            del st.session_state.none_error
+        return False
+    else:
+        if "none_error" not in st.session_state:
+            st.session_state.none_error = True
+        return True
+
 def click_continue():
-    st.session_state.page += 1
+    if not check_none_answers():
+        st.session_state.page += 1
 
 def click_back():
+    if "none_error" in st.session_state:
+        del st.session_state.none_error
     st.session_state.page -= 1
 
 def submit_form():
     # -Tabelle für Antworten verknüpfen-
-    answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col="Antwort-ID")
-
+    answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
     # -Tabelle initialisieren-
     questionnaire_id = answers.shape[0]
     timezone = pytz.timezone('Europe/Berlin')
@@ -36,18 +52,15 @@ def submit_form():
     }
     new_answers = pd.DataFrame(data_new_answers)
     new_answers.index = [questionnaire_id]
-
     # -Antworten eintragen-
     for i in range(amount_questions):
         new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = int(translate_answer_save[st.session_state[fragebogen.loc[i, "Code"]]])
-
     # -Tabellen kombinieren und Antworten als int speichern-
     combined_answers = pd.concat([answers, new_answers], axis=0)
     question_codes = fragebogen["Code"].tolist()
     for code in question_codes:
         combined_answers[code] = combined_answers[code].astype(int)
     combined_answers.to_csv("antworten/antworten.csv", sep=';', index_label="Antwort-ID")
-
     # -Session States aufräumen-
     del st.session_state.page
     del st.session_state.id_active_mitarbeiter
@@ -70,8 +83,8 @@ translate_answer_index = {
     "trifft nicht zu": 0, 
     "trifft eher nicht zu": 1, 
     "teils-teils": 2, 
-    "trifft eher zu": 4, 
-    "trifft zu": 5,
+    "trifft eher zu": 3, 
+    "trifft zu": 4,
     None: None
 }
 
@@ -119,10 +132,15 @@ with st.form("Fragebogen"):
     else:
         submit_button = right.form_submit_button(label="Fragebogen abschließen")
         if submit_button:
-            submit_form()
-            if st.session_state.role == "Admin":
-                st.switch_page("pages/kompetenzbeurteilung.py")
-            else:
-                st.switch_page("pages/fragebogen_start.py")
+            if not check_none_answers():
+                submit_form()
+                if st.session_state.role == "Admin":
+                    st.switch_page("pages/kompetenzbeurteilung.py")
+                elif st.session_state.role == "Mitarbeiter":
+                    st.switch_page("pages/fragebogen_start.py")
+                else:
+                    raise Exception("session_state.role not valid")
     if st.session_state.page > 1:
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
+    if "none_error" in st.session_state and st.session_state.none_error:
+        st.warning("Bitte beantworten Sie alle Fragen.")

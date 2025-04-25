@@ -1,7 +1,9 @@
 import streamlit as st
 from initialize import create_empty_answers_dataframe
+from session_state import clear_session_states_except_role_and_debug_mode
+from menu import debug_menu
 
-st.set_option("client.showSidebarNavigation", False)
+debug_menu()
 
 # -Leere Tabelle für Antworten erstellen, falls keine existiert-
 create_empty_answers_dataframe()
@@ -19,6 +21,10 @@ if confirm_button:
     st.session_state.role = st.session_state.selected_role
     st.session_state.debug_mode = st.session_state.selected_debug_mode
     if st.session_state.role == "Mitarbeiter":
+        clear_session_states_except_role_and_debug_mode()
         st.switch_page("pages/fragebogen_start.py")
-    else:
+    elif st.session_state.role == "Admin":
+        clear_session_states_except_role_and_debug_mode()
         st.switch_page("pages/visualisierung.py")
+    else:
+        st.warning("Bitte wählen Sie eine Rolle aus")

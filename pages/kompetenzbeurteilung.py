@@ -5,39 +5,40 @@ from menu import default_menu
 default_menu()
 
 # -Tabelle für Mitarbeiter verknüpfen-
-data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
+data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
 
 # -Tabelle für Antworten verknüpfen-
-answers = pd.read_csv("antworten/antworten.csv", sep=';')
-
-# -Mitarbeiter auswählen-
-def selectbox():
-    st.session_state.id_active_mitarbeiter = data_mitarbeiter.index[data_mitarbeiter["Name"] == st.session_state.selected_mitarbeiter][0]
-    st.session_state.name_active_mitarbeiter = st.session_state.selected_mitarbeiter
+answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
 
 # -Titel-
 st.title("Kompetenzbeurteilung")
 
 # -Mitarbeiterauswahl-
-selectbox_mitarbeiter = st.selectbox(label="Welcher MA soll beurteilt werden?", options=data_mitarbeiter[["Name"]], index=None, key="selected_mitarbeiter", on_change=selectbox, placeholder="Bitte Mitarbeiter auswählen")
+selected_id_active_mitarbeiter = st.selectbox(label="Welcher MA soll beurteilt werden?", options=data_mitarbeiter.index, index=None, placeholder="Bitte Mitarbeiter auswählen")
 
-if "id_active_mitarbeiter" in st.session_state:
-    amount_answered_forms = len(answers.loc[answers["Mitarbeiter-ID"] == st.session_state.id_active_mitarbeiter])
+if selected_id_active_mitarbeiter is not None:
+    selected_name_active_mitarbeiter = data_mitarbeiter.loc[selected_id_active_mitarbeiter, "Name"]
+    amount_answered_forms = len(answers.loc[answers["Mitarbeiter-ID"] == selected_id_active_mitarbeiter])
+    st.write(f"Ausgewählter Mitarbeiter: {selected_name_active_mitarbeiter}")
     if amount_answered_forms == 1:
-        st.write("Für den Mitarbeiter wurde bereits ein Fragebogen ausgefüllt.")
+        st.write(f"Für den Mitarbeiter wurde bereits ein Fragebogen ausgefüllt.")
     elif amount_answered_forms > 1:
         st.write(f"Für den Mitarbeiter wurden bereits {amount_answered_forms} Fragebögen ausgefüllt.")
     else:
         st.write("Für den Mitarbeiter wurde noch kein Fragebogen ausgefüllt.")
 
-    st.write("\n")
+    st.markdown('#')
 
     st.write("Wie möchten Sie Daten aufnehmen?")
 
     left, right = st.columns(2)
     with left:
         if st.button(label="Fragebogen ausfüllen"):
+            st.session_state.id_active_mitarbeiter = selected_id_active_mitarbeiter
+            st.session_state.name_active_mitarbeiter = selected_name_active_mitarbeiter
             st.switch_page("pages/fragebogen.py")
     with right:
         if st.button(label="Kompetenzen manuell festlegen"):
+            st.session_state.id_active_mitarbeiter = selected_id_active_mitarbeiter
+            st.session_state.name_active_mitarbeiter = selected_name_active_mitarbeiter
             st.switch_page("pages/kompetenzen_festlegen.py")
