@@ -10,7 +10,7 @@ default_menu()
 data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
 
 # -Tabelle für Antworten verknüpfen-
-answers = pd.read_csv("antworten/Antworten.csv")
+answers = pd.read_csv("antworten/antworten.csv", sep=';')
 
 st.title("User Management")
 

@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import datetime as dt
+import pytz
 from menu import no_menu
 
 st.set_page_config(page_title="Fragebogen")
@@ -11,7 +12,7 @@ no_menu()
 data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", index_col=0)
 
 # -Fragebogen einlesen-
-fragebogen = pd.read_csv("fragebögen/Messinstrument_V01_aufbereitet.CSV", sep=';', encoding='utf-8')
+fragebogen = pd.read_csv("fragebögen/25-04-25_Itemübersicht_Befragungsinstrument_CSV_UTF8.CSV", sep=';', encoding='utf-8')
 
 # -Funktionen-
 def click_continue():
@@ -22,12 +23,15 @@ def click_back():
 
 def submit_form():
     # -Tabelle für Antworten verknüpfen-
-    answers = pd.read_csv("antworten/Antworten.csv", index_col="Fragebogen-ID")
+    answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col="Antwort-ID")
 
     # -Tabelle initialisieren-
-    questionnaire_id = len(answers)
+    questionnaire_id = answers.shape[0]
+    timezone = pytz.timezone('Europe/Berlin')
+    now = dt.datetime.now(timezone)
+    formatted_now = now.strftime('%Y-%m-%d %H:%M')
     data_new_answers = {
-        "Speicherzeitpunkt": [dt.datetime.now()],
+        "Speicherzeitpunkt": [formatted_now],
         "Mitarbeiter-ID": [st.session_state.id_active_mitarbeiter]
     }
     new_answers = pd.DataFrame(data_new_answers)
@@ -35,14 +39,14 @@ def submit_form():
 
     # -Antworten eintragen-
     for i in range(amount_questions):
-        if fragebogen.loc[i, "invertiert"] is True:
-            new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = translate_answer_inverted[st.session_state[fragebogen.loc[i, "Code"]]]
-        else:
-            new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = translate_answer[st.session_state[fragebogen.loc[i, "Code"]]]
+        new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = int(translate_answer_save[st.session_state[fragebogen.loc[i, "Code"]]])
 
-    # -Tabellen kombinieren-
+    # -Tabellen kombinieren und Antworten als int speichern-
     combined_answers = pd.concat([answers, new_answers], axis=0)
-    combined_answers.to_csv("antworten/Antworten.csv", index_label="Fragebogen-ID")
+    question_codes = fragebogen["Code"].tolist()
+    for code in question_codes:
+        combined_answers[code] = combined_answers[code].astype(int)
+    combined_answers.to_csv("antworten/antworten.csv", sep=';', index_label="Antwort-ID")
 
     # -Session States aufräumen-
     del st.session_state.page
@@ -53,8 +57,8 @@ def submit_form():
 # -Mögliche Antworten für die Fragen (trifft zu entspricht 1, trifft nicht zu entspricht 5)
 options_form= ("trifft nicht zu", "trifft eher nicht zu", "teils-teils", "trifft eher zu", "trifft zu")
 
-# -Übersetzungstabellen-
-translate_answer = {
+# -Übersetzungstabelle-
+translate_answer_save = {
     "trifft nicht zu": 5, 
     "trifft eher nicht zu": 4, 
     "teils-teils": 3, 
@@ -62,24 +66,25 @@ translate_answer = {
     "trifft zu": 1,
     None: 0
 }
-translate_answer_inverted = {
-    "trifft nicht zu": 1, 
-    "trifft eher nicht zu": 2, 
-    "teils-teils": 3, 
+translate_answer_index = {
+    "trifft nicht zu": 0, 
+    "trifft eher nicht zu": 1, 
+    "teils-teils": 2, 
     "trifft eher zu": 4, 
     "trifft zu": 5,
-    None: 0
+    None: None
 }
 
 # -Anzahl der Fragen auslesen-
 amount_questions = fragebogen.shape[0]
 
-# -Anpassbare Variable zur Einstellung der maximalen Fragen pro Seite
+# -Anpassbare Variable zur Einstellung der maximalen Fragen pro Seite-
 amount_questions_per_page = 6
 
 # -Titel-
 st.title("Fragebogen")
-st.write(f"Für {st.session_state.name_active_mitarbeiter}")
+st.write(f"Mitarbeiter: {st.session_state.name_active_mitarbeiter}")
+st.write(f"Mitarbeiter-ID: {st.session_state.id_active_mitarbeiter}")
 st.write(f"Anzahl Fragen: {amount_questions}")
 
 # -Anzahl der Seiten berechnen-
@@ -103,7 +108,10 @@ with st.form("Fragebogen"):
     st.header("Formular")
     st.write(f"Anzahl Fragen auf dieser Seite: {amount_questions_in_page}")
     for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
-        radio_button = st.radio(label=fragebogen.loc[i, "Items"], options=options_form, index=None, key=fragebogen.loc[i, "Code"], horizontal=True)
+        if fragebogen.loc[i, "Code"] in st.session_state:
+            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Code"]]], key=fragebogen.loc[i, "Code"], horizontal=True)
+        else:
+            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=None, key=fragebogen.loc[i, "Code"], horizontal=True)
     st.write(f"Seite {st.session_state.page} von {amount_pages}")
     left, right = st.columns(2)
     if st.session_state.page < amount_pages:
@@ -112,6 +120,9 @@ with st.form("Fragebogen"):
         submit_button = right.form_submit_button(label="Fragebogen abschließen")
         if submit_button:
             submit_form()
-            st.switch_page("pages/kompetenzbeurteilung.py")
+            if st.session_state.role == "Admin":
+                st.switch_page("pages/kompetenzbeurteilung.py")
+            else:
+                st.switch_page("pages/fragebogen_start.py")
     if st.session_state.page > 1:
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
