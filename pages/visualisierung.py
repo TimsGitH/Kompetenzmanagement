@@ -12,12 +12,15 @@ def update(user_id):
 
 data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
 
-data_peter = pd.read_csv("kompetenzen/kompetenzen_peter.csv", index_col=0)
+data_peter = pd.read_csv("kompetenzen/kompetenzen_example.csv", index_col=0)
 
 
 
 
 st.title("Visualisierung")
 name_active_mitarbeiter = st.selectbox("Mitarbeiter auswählen:", data_mitarbeiter[["Name"]])
-id_active_mitarbeiter = data_mitarbeiter.index[data_mitarbeiter["Name"] == name_active_mitarbeiter][0]
+if len(data_mitarbeiter) > 0:
+    id_active_mitarbeiter = data_mitarbeiter.index[data_mitarbeiter["Name"] == name_active_mitarbeiter][0]
+else:
+    id_active_mitarbeiter = 000
 update(id_active_mitarbeiter)

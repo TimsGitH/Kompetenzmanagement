@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
-from menu import no_menu
+from menu import default_menu
 
 st.set_page_config(page_title="Fragebogen")
 
-no_menu()
+default_menu()
 
 # -Mitarbeiterdaten einlesen-
 data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
@@ -32,4 +32,3 @@ if set_id_active_mitarbeiter is not None:
             data_mitarbeiter.to_csv("user_management/mitarbeiter.csv", sep=';', index_label="Mitarbeiter-ID")
             st.rerun(scope="app")
 st.markdown('#')
-st.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")

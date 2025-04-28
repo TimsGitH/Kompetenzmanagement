@@ -24,24 +24,33 @@ def debug_menu():
 def default_menu():
     if "role" not in st.session_state:
         st.switch_page("streamlit_app.py")
-    st.sidebar.header("Navigation")
-    st.sidebar.page_link("pages/visualisierung.py", label="Visualisierung")
-    st.sidebar.page_link("pages/user_management.py", label="User Management")
-    st.sidebar.page_link("pages/kompetenzbeurteilung.py", label="Kompetenzbeurteilung")
-    st.sidebar.page_link("pages/admin.py", label="Admin")
-    st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
+    elif st.session_state.role == "Admin":
+        st.sidebar.header("Navigation")
+        st.sidebar.page_link("pages/visualisierung.py", label="Visualisierung")
+        st.sidebar.page_link("pages/user_management.py", label="User Management")
+        st.sidebar.page_link("pages/kompetenzbeurteilung.py", label="Kompetenzbeurteilung")
+        st.sidebar.page_link("pages/admin.py", label="Admin")
+        st.sidebar.page_link("pages/export.py", label="Export")
+        st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
+    elif st.session_state.role == "Mitarbeiter":
+        st.sidebar.header("Navigation")
+        st.sidebar.page_link("pages/fragebogen_start.py", label="Fragebogen")
+        st.sidebar.page_link("pages/export.py", label="Export")
+        st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
     debug_menu()
 
 def no_menu():
     if "role" not in st.session_state:
         st.switch_page("streamlit_app.py")
-    if st.session_state.role == "Admin":
-        if "warning" not in st.session_state:
-            st.sidebar.button(label="Zurück", use_container_width=True, on_click=click_back_button_1)
-        elif st.session_state.warning:
-            st.sidebar.warning("Änderungen werden nicht gespeichert!")
-            st.sidebar.button(label="Abbrechen", on_click=click_cancel_button)
-            if st.sidebar.button(label="Trotzdem Zurück"):
-                clear_session_states_except_role_and_debug_mode()
+    elif "warning" not in st.session_state:
+        st.sidebar.button(label="Zurück", use_container_width=True, on_click=click_back_button_1)
+    else:
+        st.sidebar.warning("Änderungen werden nicht gespeichert!")
+        st.sidebar.button(label="Abbrechen", on_click=click_cancel_button)
+        if st.sidebar.button(label="Trotzdem Zurück"):
+            clear_session_states_except_role_and_debug_mode()
+            if st.session_state.role == "Admin":
                 st.switch_page("pages/kompetenzbeurteilung.py")
+            elif st.session_state.role == "Mitarbeiter":
+                st.switch_page("pages/fragebogen_start.py")
     debug_menu()
