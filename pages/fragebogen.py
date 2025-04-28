@@ -121,10 +121,12 @@ with st.form("Fragebogen"):
     st.header("Formular")
     st.write(f"Anzahl Fragen auf dieser Seite: {amount_questions_in_page}")
     for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
+        st.markdown("")
+        st.markdown(body=fragebogen.loc[i, "Itemformulierung"])
         if fragebogen.loc[i, "Code"] in st.session_state:
-            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Code"]]], key=fragebogen.loc[i, "Code"], horizontal=True)
+            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Code"]]], key=fragebogen.loc[i, "Code"], horizontal=True, label_visibility="collapsed")
         else:
-            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=None, key=fragebogen.loc[i, "Code"], horizontal=True)
+            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=None, key=fragebogen.loc[i, "Code"], horizontal=True, label_visibility="collapsed")
     st.write(f"Seite {st.session_state.page} von {amount_pages}")
     left, right = st.columns(2)
     if st.session_state.page < amount_pages:
