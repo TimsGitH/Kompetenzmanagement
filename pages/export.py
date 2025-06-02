@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from menu import default_menu
+from functions.menu import default_menu
 
 st.set_page_config(page_title="Export")
 

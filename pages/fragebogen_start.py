@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-from menu import default_menu
+from functions.menu import default_menu
+from functions.user_management import create_mitarbeiter
 
 st.set_page_config(page_title="Fragebogen")
 
@@ -11,6 +12,7 @@ data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index
 
 # -Titel-
 st.title("Fragebogen")
+
 set_id_active_mitarbeiter = st.number_input(label="Mitarbeiter-ID (zwischen 101 und 999):", min_value=101, max_value=999, value=None)
 st.button(label="Bestätigen")
 if set_id_active_mitarbeiter is not None:
@@ -28,7 +30,5 @@ if set_id_active_mitarbeiter is not None:
         set_name_active_mitarbeiter = st.text_input(label="Mitarbeiter Name")
         confirm_new_mitarbeiter = st.button(label="Mitarbeiter anlegen")
         if confirm_new_mitarbeiter:
-            data_mitarbeiter.loc[set_id_active_mitarbeiter, "Name"] = set_name_active_mitarbeiter
-            data_mitarbeiter.to_csv("user_management/mitarbeiter.csv", sep=';', index_label="Mitarbeiter-ID")
+            create_mitarbeiter(id=set_id_active_mitarbeiter, name=set_name_active_mitarbeiter)
             st.rerun(scope="app")
-st.markdown('#')

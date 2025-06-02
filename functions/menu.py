@@ -1,6 +1,6 @@
 import streamlit as st
-from initialize import create_empty_answers_dataframe
-from session_state import clear_session_states, clear_session_states_except_role_and_debug_mode
+from functions.initialize import create_empty_answers_dataframe
+from functions.session_state import clear_session_states, clear_session_states_except_role_and_debug_mode
 
 # -Button Funktionen-
 def click_back_button_1():

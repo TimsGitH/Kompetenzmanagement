@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from menu import no_menu
+from functions.menu import no_menu
 
 st.set_page_config(page_title="Kompetenzen festlegen")
 

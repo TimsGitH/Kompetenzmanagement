@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime as dt
 import pytz
-from menu import no_menu
+from functions.menu import no_menu
 
 st.set_page_config(page_title="Fragebogen")
 
@@ -39,9 +39,9 @@ def click_back():
     st.session_state.page -= 1
 
 def submit_form():
-    # -Tabelle für Antworten verknüpfen-
+    # Tabelle für Antworten verknüpfen
     answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
-    # -Tabelle initialisieren-
+    # Tabelle initialisieren
     questionnaire_id = answers.shape[0]
     timezone = pytz.timezone('Europe/Berlin')
     now = dt.datetime.now(timezone)
@@ -52,16 +52,16 @@ def submit_form():
     }
     new_answers = pd.DataFrame(data_new_answers)
     new_answers.index = [questionnaire_id]
-    # -Antworten eintragen-
+    # Antworten eintragen
     for i in range(amount_questions):
         new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = int(translate_answer_save[st.session_state[fragebogen.loc[i, "Code"]]])
-    # -Tabellen kombinieren und Antworten als int speichern-
+    # Tabellen kombinieren und Antworten als int speichern
     combined_answers = pd.concat([answers, new_answers], axis=0)
     question_codes = fragebogen["Code"].tolist()
     for code in question_codes:
         combined_answers[code] = combined_answers[code].astype(int)
     combined_answers.to_csv("antworten/antworten.csv", sep=';', index_label="Antwort-ID")
-    # -Session States aufräumen-
+    # Session States aufräumen
     del st.session_state.page
     del st.session_state.id_active_mitarbeiter
     del st.session_state.name_active_mitarbeiter

@@ -1,7 +1,7 @@
 import streamlit as st
-from initialize import create_empty_answers_dataframe
-from session_state import clear_session_states_except_role_and_debug_mode
-from menu import debug_menu
+from functions.initialize import create_empty_answers_dataframe
+from functions.session_state import clear_session_states_except_role_and_debug_mode
+from functions.menu import debug_menu
 
 debug_menu()
 
