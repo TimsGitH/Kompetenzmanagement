@@ -112,6 +112,11 @@ if 'page' not in st.session_state:
     st.session_state.page = 1
 st.progress((st.session_state.page - 1) / amount_pages, text="Fortschritt Fragebogen")
 
+# -Session State initialisieren
+for frage_id in fragebogen["Frage-ID"]:
+    if frage_id not in st.session_state:
+        st.session_state[frage_id] = None
+
 # -Fragebogen-
 with st.form("Fragebogen"):
     if st.session_state.page < amount_pages:
@@ -123,8 +128,6 @@ with st.form("Fragebogen"):
     for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
         st.markdown("")
         st.markdown(body=fragebogen.loc[i, "Frage"])
-        if fragebogen.loc[i, "Frage-ID"] not in st.session_state:
-            st.session_state[fragebogen.loc[i, "Frage-ID"]] = None
         radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Frage-ID"]]], key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
     st.write(f"Seite {st.session_state.page} von {amount_pages}")
     left, right = st.columns(2)
