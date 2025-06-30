@@ -4,10 +4,10 @@ import pandas as pd
 def invert_corresponding_answers(df):
     # Funktion zum invertieren der im Fragebogen entsprechend markierten Antworten.
     invert_dict = {1: 5, 2:4, 3:3, 4:2, 5:1}
-    fragebogen = pd.read_csv("fragebögen/25-04-25_Itemübersicht_Befragungsinstrument_CSV_UTF8.CSV", sep=';', encoding='utf-8')
+    fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
     df_with_inverted_answers = df
     for index in df_with_inverted_answers.index:
-        if index in fragebogen["Code"].values and fragebogen.loc[fragebogen['Code'] == index, "invertiert"].values[0] is True:
+        if index in fragebogen["Frage-ID"].values and fragebogen.loc[fragebogen['Frage-ID'] == index, "invertiert"].values[0] is True:
             df_with_inverted_answers.loc[index] = invert_dict[df_with_inverted_answers.loc[index]]
     return df_with_inverted_answers
 
@@ -24,8 +24,8 @@ def calculate_cluster_values(df):
 
 def get_categories():
     # Funktion zum Abrufen der Kategorien des hinterlegten Fragebogens.
-    fragebogen = pd.read_csv("fragebögen/25-04-25_Itemübersicht_Befragungsinstrument_CSV_UTF8.CSV", sep=';', encoding='utf-8')
-    return fragebogen["Clustername"].unique()
+    fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
+    return fragebogen["Cluster-Name"].unique()
 
 def get_cluster_values_with_times(id):
     # Funktion zum Abrufen der Cluster-Werte mit entsprechenden Zeitpunkten.

@@ -12,13 +12,13 @@ no_menu()
 data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
 
 # -Fragebogen einlesen-
-fragebogen = pd.read_csv("fragebögen/25-04-25_Itemübersicht_Befragungsinstrument_CSV_UTF8.CSV", sep=';', encoding='utf-8')
+fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
 
 # -Funktionen-
 def check_none_answers():
     none_counter = 0
     for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
-        if st.session_state[fragebogen.loc[i, "Code"]] is None:
+        if st.session_state[fragebogen.loc[i, "Frage-ID"]] is None:
             none_counter += 1
     if none_counter == 0:
         if "none_error" in st.session_state:
@@ -54,12 +54,12 @@ def submit_form():
     new_answers.index = [questionnaire_id]
     # Antworten eintragen
     for i in range(amount_questions):
-        new_answers.loc[questionnaire_id, fragebogen.loc[i, "Code"]] = int(translate_answer_save[st.session_state[fragebogen.loc[i, "Code"]]])
+        new_answers.loc[questionnaire_id, fragebogen.loc[i, "Frage-ID"]] = int(translate_answer_save[st.session_state[fragebogen.loc[i, "Frage-ID"]]])
     # Tabellen kombinieren und Antworten als int speichern
     combined_answers = pd.concat([answers, new_answers], axis=0)
-    question_codes = fragebogen["Code"].tolist()
-    for code in question_codes:
-        combined_answers[code] = combined_answers[code].astype(int)
+    question_ids = fragebogen["Frage-ID"].tolist()
+    for id in question_ids:
+        combined_answers[id] = combined_answers[id].astype(int)
     combined_answers.to_csv("antworten/antworten.csv", sep=';', index_label="Antwort-ID")
     # Session States aufräumen
     del st.session_state.page
@@ -122,11 +122,11 @@ with st.form("Fragebogen"):
     st.write(f"Anzahl Fragen auf dieser Seite: {amount_questions_in_page}")
     for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
         st.markdown("")
-        st.markdown(body=fragebogen.loc[i, "Itemformulierung"])
-        if fragebogen.loc[i, "Code"] in st.session_state:
-            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Code"]]], key=fragebogen.loc[i, "Code"], horizontal=True, label_visibility="collapsed")
+        st.markdown(body=fragebogen.loc[i, "Frage"])
+        if fragebogen.loc[i, "Frage-ID"] in st.session_state:
+            radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Frage-ID"]]], key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
         else:
-            radio_button = st.radio(label=fragebogen.loc[i, "Itemformulierung"], options=options_form, index=None, key=fragebogen.loc[i, "Code"], horizontal=True, label_visibility="collapsed")
+            radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=options_form, index=None, key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
     st.write(f"Seite {st.session_state.page} von {amount_pages}")
     left, right = st.columns(2)
     if st.session_state.page < amount_pages:
