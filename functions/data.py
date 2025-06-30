@@ -15,22 +15,34 @@ def calculate_cluster_values(df):
     # Funktion zum Berechnen der Cluster-Werte für Tabellen.
     df_with_inverted_answers = invert_corresponding_answers(df)
     cluster_values = []
-    for i in range(len(get_categories())):
+    for i in range(len(get_cluster_names())):
         mask = df_with_inverted_answers.index.str.match(fr'^{i + 1}[A-Z]')
         cluster_answers = df_with_inverted_answers[mask]
         cluster_value = round(cluster_answers.sum() / len(cluster_answers), 1)
         cluster_values.append(cluster_value)
     return cluster_values
 
-def get_categories():
-    # Funktion zum Abrufen der Kategorien des hinterlegten Fragebogens.
+def get_cluster_names():
+    # Funktion zum Abrufen der Cluster-Namen des hinterlegten Fragebogens.
     fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
     return fragebogen["Cluster-Name"].unique()
+
+def get_cluster_numbers():
+    # Funktion zum Abrufen der Cluster-Nummern des hinterlegten Fragebogens.
+    fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
+    return fragebogen["Cluster-Nummer"].unique()
+
+def get_cluster_table():
+    # Funktion zum Abrufen der Cluster-Nummern des hinterlegten Fragebogens.
+    fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
+    cluster_data = fragebogen[["Cluster-Nummer", "Cluster-Name"]].drop_duplicates()
+    cluster_data.set_index("Cluster-Nummer", inplace=True)
+    return cluster_data
 
 def get_cluster_values_with_times(id):
     # Funktion zum Abrufen der Cluster-Werte mit entsprechenden Zeitpunkten.
     answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
-    filtered_answers = answers[answers["Mitarbeiter-ID"] == id]
+    return answers[answers["Mitarbeiter-ID"] == id]
 
 def get_latest_update_time(id):
     # Funktion zum Abrufen des letzten Eintrags für die gegebene ID.

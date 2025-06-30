@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime as dt
 import pytz
+from functions.data import get_cluster_numbers
 from functions.menu import no_menu
 
 st.set_page_config(page_title="Fragebogen")
@@ -100,36 +101,35 @@ st.write(f"Mitarbeiter: {st.session_state.name_active_mitarbeiter}")
 st.write(f"Mitarbeiter-ID: {st.session_state.id_active_mitarbeiter}")
 st.write(f"Anzahl Fragen: {amount_questions}")
 
-# -Anzahl der Seiten berechnen-
+# -Anzahl der Seiten berechnen und ausgeben-
 if amount_questions == 0:
-    st.write("Es wurde kein Fragebogen hinterlegt.")
+    st.write("Es wurde kein passender Fragebogen hinterlegt.")
 else:
-    amount_pages = - ( - amount_questions // amount_questions_per_page ) #Aufgerundete, ganzzahlige Division
-    st.write(f"Anzahl Seiten des Fragebogens: {amount_pages}")
+    amount_selected_clusters = st.session_state.selected_clusters["Selected"].sum()
+    st.write(f"Anzahl ausgewählter Cluster: {amount_selected_clusters}")
 
 # -Forschrittsanzeigen-
-if 'page' not in st.session_state:
-    st.session_state.page = 1
-st.progress((st.session_state.page - 1) / amount_pages, text="Fortschritt Fragebogen")
+first_selected_cluster = st.session_state.selected_clusters[st.session_state.selected_clusters["Selected"]].index[0]
+if "current_cluster" not in st.session_state:
+    st.session_state.current_cluster = first_selected_cluster
 
 # -Fragebogen-
 with st.form("Fragebogen"):
-    if st.session_state.page < amount_pages:
-        amount_questions_in_page = amount_questions_per_page
-    else:
-        amount_questions_in_page = amount_questions - ((st.session_state.page - 1) * amount_questions_per_page)
     st.header("Formular")
+    questions_for_current_cluster = fragebogen[fragebogen["Cluster-Nummer"] == st.session_state.current_cluster]
+    amount_questions_in_page = len(questions_for_current_cluster)
     st.write(f"Anzahl Fragen auf dieser Seite: {amount_questions_in_page}")
-    for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
+    st.write(f"Cluster-Name: {st.session_state.selected_clusters.loc[st.session_state.current_cluster, 'Cluster-Name']}")
+    for i in range(amount_questions_in_page):
         st.markdown("")
         st.markdown(body=fragebogen.loc[i, "Frage"])
         if fragebogen.loc[i, "Frage-ID"] in st.session_state:
             radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Frage-ID"]]], key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
         else:
             radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=options_form, index=None, key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
-    st.write(f"Seite {st.session_state.page} von {amount_pages}")
+    st.write(f"Cluster {st.session_state.current_cluster} von {amount_selected_clusters}")
     left, right = st.columns(2)
-    if st.session_state.page < amount_pages:
+    if st.session_state.current_cluster < amount_selected_clusters:
         continue_button = right.form_submit_button(label="Weiter", on_click=click_continue)
     else:
         submit_button = right.form_submit_button(label="Fragebogen abschließen")
@@ -142,7 +142,8 @@ with st.form("Fragebogen"):
                     st.switch_page("pages/fragebogen_start.py")
                 else:
                     raise Exception("session_state.role not valid")
-    if st.session_state.page > 1:
+    # Prüfen, ob current_cluster der erste ausgewählte Cluster ist
+    if st.session_state.current_cluster != first_selected_cluster:
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
     if "none_error" in st.session_state and st.session_state.none_error:
         st.warning("Bitte beantworten Sie alle Fragen.")

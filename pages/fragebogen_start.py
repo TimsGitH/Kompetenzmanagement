@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from functions.data import get_cluster_table
+from functions.fragebogen import select_clusters
 from functions.menu import default_menu
 from functions.user_management import create_mitarbeiter
 
@@ -20,10 +22,12 @@ if set_id_active_mitarbeiter is not None:
     if set_id_active_mitarbeiter in data_mitarbeiter.index:
         set_name_active_mitarbeiter = data_mitarbeiter.loc[set_id_active_mitarbeiter, "Name"]
         st.write(f"Mitarbeiter mit der ID {set_id_active_mitarbeiter}: {set_name_active_mitarbeiter}")
+        selected_clusters = select_clusters()
         begin_fragebogen = st.button(label="Fragebogen starten")
         if begin_fragebogen:
             st.session_state.id_active_mitarbeiter = set_id_active_mitarbeiter
             st.session_state.name_active_mitarbeiter = set_name_active_mitarbeiter
+            st.session_state.selected_clusters = selected_clusters
             st.switch_page("pages/fragebogen.py")
     else:
         st.write(f"Kein Mitarbeiter mit der ID {set_id_active_mitarbeiter} gefunden.")

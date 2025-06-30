@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from functions.menu import default_menu
-from functions.data import get_categories, get_latest_cluster_values, get_latest_update_time
+from functions.data import get_cluster_names, get_latest_cluster_values, get_latest_update_time
 
 # -Seitenkonfiguration-
 st.set_page_config(page_title="Visualisierung", layout="wide")
@@ -33,7 +33,7 @@ with left:
     st.header("Kompetenzen")
     df_radar = dict(
         Wert=get_latest_cluster_values(set_id_active_mitarbeiter),
-        Kategorie=get_categories()
+        Kategorie=get_cluster_names()
     )
     radar_chart = px.line_polar(df_radar, r="Wert", theta="Kategorie", range_r=[5,0], line_close=True)
     st.plotly_chart(figure_or_data=radar_chart)
@@ -51,9 +51,9 @@ with right:
 
     # -Profilentwicklung Diagramm-
     st.header("Profilentwicklung")
-    set_category = st.selectbox("Kategorie:", get_categories())
+    set_category = st.selectbox("Kategorie:", get_cluster_names())
     df_line_chart = pd.DataFrame({
-        "Kategorie": get_categories(),
+        "Kategorie": get_cluster_names(),
         "Wert": get_latest_cluster_values(set_id_active_mitarbeiter)
     })
     st.line_chart(df_line_chart, x="Kategorie", y="Wert")
