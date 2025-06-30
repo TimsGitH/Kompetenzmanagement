@@ -92,7 +92,7 @@ translate_answer_index = {
 amount_questions = fragebogen.shape[0]
 
 # -Anpassbare Variable zur Einstellung der maximalen Fragen pro Seite-
-amount_questions_per_page = 6
+amount_questions_per_page = 12
 
 # -Titel-
 st.title("Fragebogen")
