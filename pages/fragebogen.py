@@ -112,6 +112,11 @@ if 'page' not in st.session_state:
     st.session_state.page = 1
 st.progress((st.session_state.page - 1) / amount_pages, text="Fortschritt Fragebogen")
 
+# -Session State initialisieren
+for frage_id in fragebogen["Frage-ID"]:
+    if frage_id not in st.session_state:
+        st.session_state[frage_id] = None
+
 # -Fragebogen-
 with st.form("Fragebogen"):
     if st.session_state.page < amount_pages:

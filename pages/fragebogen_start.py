@@ -9,9 +9,6 @@ default_menu()
 # -Mitarbeiterdaten einlesen-
 data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
 
-# -Fragebogen einlesen-
-fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
-
 # -Titel-
 st.title("Fragebogen")
 set_id_active_mitarbeiter = st.number_input(label="Mitarbeiter-ID (zwischen 101 und 999):", min_value=101, max_value=999, value=None)
@@ -25,10 +22,6 @@ if set_id_active_mitarbeiter is not None:
         if begin_fragebogen:
             st.session_state.id_active_mitarbeiter = set_id_active_mitarbeiter
             st.session_state.name_active_mitarbeiter = set_name_active_mitarbeiter
-            # -Session State initialisieren
-            for frage_id in fragebogen["Frage-ID"]:
-                if frage_id not in st.session_state:
-                    st.session_state[frage_id] = None
             st.switch_page("pages/fragebogen.py")
     else:
         st.write(f"Kein Mitarbeiter mit der ID {set_id_active_mitarbeiter} gefunden.")
