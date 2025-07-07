@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 
-# -Leere Tabelle für Antworten erstellen, falls keine existiert-
 def create_empty_answers_dataframe():
+    # Leere Tabelle für Antworten erstellen, falls keine existiert
     answers_path = "antworten/antworten.csv"
     if not os.path.exists(answers_path):
         column_names = ["Speicherzeitpunkt", "Mitarbeiter-ID"]

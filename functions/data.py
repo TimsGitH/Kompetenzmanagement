@@ -1,4 +1,3 @@
-import streamlit as st
 import pandas as pd
 
 def invert_corresponding_answers(df):

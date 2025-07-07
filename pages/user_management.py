@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from functions.menu import default_menu
-from functions.user_management import create_mitarbeiter
+from functions.user_management import create_profile
 
 st.set_page_config(page_title="User Management")
 
@@ -26,7 +26,7 @@ def submenu_add():
     set_name_active_mitarbeiter = st.text_input(label="Mitarbeiter Name")
     confirm_new_mitarbeiter = st.button(label="Mitarbeiter anlegen", disabled=id_taken)
     if confirm_new_mitarbeiter and set_id_active_mitarbeiter not in data_mitarbeiter.index:
-        create_mitarbeiter(id=set_id_active_mitarbeiter, name=set_name_active_mitarbeiter)
+        create_profile(id=set_id_active_mitarbeiter, name=set_name_active_mitarbeiter)
         st.rerun(scope="app")
 
 def submenu_edit():

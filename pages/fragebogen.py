@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import datetime as dt
 import pytz
+from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAVE, TRANSLATE_ANSWER_INDEX
 from functions.menu import no_menu
+from functions.fragebogen import get_amount_questions
 
 st.set_page_config(page_title="Fragebogen")
 
@@ -17,7 +19,7 @@ fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom
 # -Funktionen-
 def check_none_answers():
     none_counter = 0
-    for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
+    for i in range((st.session_state.page - 1) * AMOUNT_QUESTIONS_PER_PAGE, ((st.session_state.page - 1) * AMOUNT_QUESTIONS_PER_PAGE) + amount_questions_in_page):
         if st.session_state[fragebogen.loc[i, "Frage-ID"]] is None:
             none_counter += 1
     if none_counter == 0:
@@ -54,7 +56,7 @@ def submit_form():
     new_answers.index = [questionnaire_id]
     # Antworten eintragen
     for i in range(amount_questions):
-        new_answers.loc[questionnaire_id, fragebogen.loc[i, "Frage-ID"]] = int(translate_answer_save[st.session_state[fragebogen.loc[i, "Frage-ID"]]])
+        new_answers.loc[questionnaire_id, fragebogen.loc[i, "Frage-ID"]] = int(TRANSLATE_ANSWER_SAVE[st.session_state[fragebogen.loc[i, "Frage-ID"]]])
     # Tabellen kombinieren und Antworten als int speichern
     combined_answers = pd.concat([answers, new_answers], axis=0)
     question_ids = fragebogen["Frage-ID"].tolist()
@@ -67,32 +69,8 @@ def submit_form():
     del st.session_state.name_active_mitarbeiter
 
 
-# -Mögliche Antworten für die Fragen (trifft zu entspricht 1, trifft nicht zu entspricht 5)
-options_form= ("trifft nicht zu", "trifft eher nicht zu", "teils-teils", "trifft eher zu", "trifft zu")
-
-# -Übersetzungstabelle-
-translate_answer_save = {
-    "trifft nicht zu": 5, 
-    "trifft eher nicht zu": 4, 
-    "teils-teils": 3, 
-    "trifft eher zu": 2, 
-    "trifft zu": 1,
-    None: 0
-}
-translate_answer_index = {
-    "trifft nicht zu": 0, 
-    "trifft eher nicht zu": 1, 
-    "teils-teils": 2, 
-    "trifft eher zu": 3, 
-    "trifft zu": 4,
-    None: None
-}
-
 # -Anzahl der Fragen auslesen-
-amount_questions = fragebogen.shape[0]
-
-# -Anpassbare Variable zur Einstellung der maximalen Fragen pro Seite-
-amount_questions_per_page = 12
+amount_questions = get_amount_questions()
 
 # -Titel-
 st.title("Fragebogen")
@@ -104,7 +82,7 @@ st.write(f"Anzahl Fragen: {amount_questions}")
 if amount_questions == 0:
     st.write("Es wurde kein Fragebogen hinterlegt.")
 else:
-    amount_pages = - ( - amount_questions // amount_questions_per_page ) #Aufgerundete, ganzzahlige Division
+    amount_pages = - ( - amount_questions // AMOUNT_QUESTIONS_PER_PAGE) # Aufgerundete, ganzzahlige Division
     st.write(f"Anzahl Seiten des Fragebogens: {amount_pages}")
 
 # -Forschrittsanzeigen-
@@ -115,18 +93,18 @@ st.progress((st.session_state.page - 1) / amount_pages, text="Fortschritt Frageb
 # -Fragebogen-
 with st.form("Fragebogen"):
     if st.session_state.page < amount_pages:
-        amount_questions_in_page = amount_questions_per_page
+        amount_questions_in_page = AMOUNT_QUESTIONS_PER_PAGE
     else:
-        amount_questions_in_page = amount_questions - ((st.session_state.page - 1) * amount_questions_per_page)
+        amount_questions_in_page = amount_questions - ((st.session_state.page - 1) * AMOUNT_QUESTIONS_PER_PAGE)
     st.header("Formular")
     st.write(f"Anzahl Fragen auf dieser Seite: {amount_questions_in_page}")
-    for i in range((st.session_state.page - 1) * amount_questions_per_page, ((st.session_state.page - 1) * amount_questions_per_page) + amount_questions_in_page):
+    for i in range((st.session_state.page - 1) * AMOUNT_QUESTIONS_PER_PAGE, ((st.session_state.page - 1) * AMOUNT_QUESTIONS_PER_PAGE) + amount_questions_in_page):
         st.markdown("")
         st.markdown(body=fragebogen.loc[i, "Frage"])
         if fragebogen.loc[i, "Frage-ID"] in st.session_state:
-            radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=options_form, index=translate_answer_index[st.session_state[fragebogen.loc[i, "Frage-ID"]]], key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
+            radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=OPTIONS_FORM, index=TRANSLATE_ANSWER_INDEX[st.session_state[fragebogen.loc[i, "Frage-ID"]]], key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
         else:
-            radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=options_form, index=None, key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
+            radio_button = st.radio(label=fragebogen.loc[i, "Frage"], options=OPTIONS_FORM, index=None, key=fragebogen.loc[i, "Frage-ID"], horizontal=True, label_visibility="collapsed")
     st.write(f"Seite {st.session_state.page} von {amount_pages}")
     left, right = st.columns(2)
     if st.session_state.page < amount_pages:

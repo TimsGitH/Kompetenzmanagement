@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from functions.menu import default_menu
-from functions.user_management import create_mitarbeiter
+from functions.user_management import create_profile
 
 st.set_page_config(page_title="Fragebogen")
 
@@ -30,5 +30,5 @@ if set_id_active_mitarbeiter is not None:
         set_name_active_mitarbeiter = st.text_input(label="Mitarbeiter Name")
         confirm_new_mitarbeiter = st.button(label="Mitarbeiter anlegen")
         if confirm_new_mitarbeiter:
-            create_mitarbeiter(id=set_id_active_mitarbeiter, name=set_name_active_mitarbeiter)
+            create_profile(id=set_id_active_mitarbeiter, name=set_name_active_mitarbeiter)
             st.rerun(scope="app")
