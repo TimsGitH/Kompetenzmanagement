@@ -16,7 +16,3 @@ def select_clusters():
     selected_clusters_df = pd.DataFrame(selected_clusters)
     selected_clusters_df.set_index("Cluster-Nummer", inplace=True)
     return selected_clusters_df
-
-def get_amount_questions():
-    fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
-    return fragebogen.shape[0]

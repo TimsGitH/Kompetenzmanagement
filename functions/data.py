@@ -1,5 +1,10 @@
 import pandas as pd
 
+def get_amount_questions():
+    # Funktion zum Abrufen der Anzahl der Fragen im Fragebogen.
+    fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
+    return fragebogen.shape[0]
+
 def invert_corresponding_answers(df):
     # Funktion zum invertieren der im Fragebogen entsprechend markierten Antworten.
     invert_dict = {1: 5, 2:4, 3:3, 4:2, 5:1}
@@ -41,12 +46,17 @@ def get_cluster_table():
 def get_cluster_values_with_times(id):
     # Funktion zum Abrufen der Cluster-Werte mit entsprechenden Zeitpunkten.
     answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
-    return answers[answers["Mitarbeiter-ID"] == id]
+    return answers[answers["Profil-ID"] == id]
+
+def get_question_ids():
+    # Funktion zum Abrufen der Frage-IDs als Liste.
+    fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
+    return fragebogen["Frage-ID"].tolist()
 
 def get_latest_update_time(id):
     # Funktion zum Abrufen des letzten Eintrags für die gegebene ID.
     answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
-    filtered_answers = answers[answers["Mitarbeiter-ID"] == id]
+    filtered_answers = answers[answers["Profil-ID"] == id]
     if len(filtered_answers) == 0:
         return None
     sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
@@ -55,7 +65,7 @@ def get_latest_update_time(id):
 def get_latest_cluster_values(id):
     # Funktion zum Berechnen der Cluster-Werte aus dem aktuellsten Fragebogen.
     answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
-    filtered_answers = answers[answers["Mitarbeiter-ID"] == id]
+    filtered_answers = answers[answers["Profil-ID"] == id]
     if len(filtered_answers) == 0:
         return None
     sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)

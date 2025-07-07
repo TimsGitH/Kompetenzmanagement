@@ -11,8 +11,8 @@ top = st.container()
 left, right = st.columns(2)
 
 
-# -Tabelle für Mitarbeiter verknüpfen-
-data_mitarbeiter = pd.read_csv("user_management/mitarbeiter.csv", sep=';', index_col=0)
+# -Tabelle für Profile verknüpfen-
+data_profiles = pd.read_csv("user_management/profiles.csv", sep=';', index_col=0)
 
 # -Tabelle für Antworten verknüpfen-
 answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
@@ -20,11 +20,11 @@ answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
 
 # -Inhalt-
 
-# -Mitarbeiter Auswahl (oben)-
+# -Profilauswahl (oben)-
 with top:
     st.title("Visualisierung")
-    set_name_active_mitarbeiter = st.selectbox("Mitarbeiter auswählen:", data_mitarbeiter[["Name"]])
-    set_id_active_mitarbeiter = data_mitarbeiter.index[data_mitarbeiter["Name"] == set_name_active_mitarbeiter][0]
+    set_name_active_profile = st.selectbox("Profil auswählen:", data_profiles[["Name"]])
+    set_id_active_profile = data_profiles.index[data_profiles["Name"] == set_name_active_profile][0]
 
 # -Linke Seite-
 with left:
@@ -32,7 +32,7 @@ with left:
     # -Netzdiagramm-
     st.header("Kompetenzen")
     df_radar = dict(
-        Wert=get_latest_cluster_values(set_id_active_mitarbeiter),
+        Wert=get_latest_cluster_values(set_id_active_profile),
         Kategorie=get_cluster_names()
     )
     radar_chart = px.line_polar(df_radar, r="Wert", theta="Kategorie", range_r=[5,0], line_close=True)
@@ -40,11 +40,11 @@ with left:
 
     # -Meta-Daten-
     st.header("Meta-Daten")
-    st.write(f"Mitarbeiter-ID: {set_id_active_mitarbeiter}")
-    st.write(f"Name: {set_name_active_mitarbeiter}")
+    st.write(f"Profil-ID: {set_id_active_profile}")
+    st.write(f"Name: {set_name_active_profile}")
     st.write("Rolle: ...")
     st.write("Geburtsdatum: ...")
-    st.write(f"Letzte Aktualisierung: {get_latest_update_time(set_id_active_mitarbeiter)}")
+    st.write(f"Letzte Aktualisierung: {get_latest_update_time(set_id_active_profile)}")
 
 # -Rechte Seite-
 with right:
@@ -54,7 +54,7 @@ with right:
     set_category = st.selectbox("Kategorie:", get_cluster_names())
     df_line_chart = pd.DataFrame({
         "Kategorie": get_cluster_names(),
-        "Wert": get_latest_cluster_values(set_id_active_mitarbeiter)
+        "Wert": get_latest_cluster_values(set_id_active_profile)
     })
     st.line_chart(df_line_chart, x="Kategorie", y="Wert")
 
