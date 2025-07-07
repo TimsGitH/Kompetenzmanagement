@@ -19,7 +19,6 @@ def debug_menu():
         st.sidebar.button(label="Session State löschen (Außer Rolle & Debug Modus)", on_click=clear_session_states_except_role_and_debug_mode)
         st.sidebar.button(label="Session State vollständig löschen", on_click=clear_session_states)
         st.sidebar.button(label="Leere Tabelle für Antworten erstellen", on_click=create_empty_answers_dataframe)
-        st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
 
 def default_menu():
     if "role" not in st.session_state:
@@ -31,18 +30,14 @@ def default_menu():
         st.sidebar.page_link("pages/kompetenzbeurteilung.py", label="Kompetenzbeurteilung")
         st.sidebar.page_link("pages/admin.py", label="Admin")
         st.sidebar.page_link("pages/export.py", label="Export")
-        st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
     elif st.session_state.role == "user":
         st.sidebar.header("Navigation")
         st.sidebar.page_link("pages/fragebogen_start.py", label="Fragebogen")
         st.sidebar.page_link("pages/export.py", label="Export")
-        st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
     debug_menu()
 
 def no_menu():
-    if "role" not in st.session_state:
-        st.switch_page("streamlit_app.py")
-    elif "warning" not in st.session_state:
+    if "warning" not in st.session_state:
         st.sidebar.button(label="Zurück", use_container_width=True, on_click=click_back_button_1)
     else:
         st.sidebar.warning("Änderungen werden nicht gespeichert!")
