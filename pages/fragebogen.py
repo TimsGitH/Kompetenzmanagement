@@ -114,9 +114,9 @@ with st.form("Fragebogen"):
         if submit_button:
             if not check_none_answers():
                 submit_form()
-                if st.session_state.role == "Admin":
+                if st.session_state.role == "admin":
                     st.switch_page("pages/kompetenzbeurteilung.py")
-                elif st.session_state.role == "Mitarbeiter":
+                elif st.session_state.role == "user":
                     st.switch_page("pages/fragebogen_start.py")
                 else:
                     raise Exception("session_state.role not valid")

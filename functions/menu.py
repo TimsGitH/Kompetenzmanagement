@@ -24,7 +24,7 @@ def debug_menu():
 def default_menu():
     if "role" not in st.session_state:
         st.switch_page("streamlit_app.py")
-    elif st.session_state.role == "Admin":
+    elif st.session_state.role == "admin":
         st.sidebar.header("Navigation")
         st.sidebar.page_link("pages/visualisierung.py", label="Visualisierung")
         st.sidebar.page_link("pages/user_management.py", label="User Management")
@@ -32,7 +32,7 @@ def default_menu():
         st.sidebar.page_link("pages/admin.py", label="Admin")
         st.sidebar.page_link("pages/export.py", label="Export")
         st.sidebar.page_link("streamlit_app.py", label="Zurück zur Rollenauswahl")
-    elif st.session_state.role == "Mitarbeiter":
+    elif st.session_state.role == "user":
         st.sidebar.header("Navigation")
         st.sidebar.page_link("pages/fragebogen_start.py", label="Fragebogen")
         st.sidebar.page_link("pages/export.py", label="Export")
@@ -49,8 +49,8 @@ def no_menu():
         st.sidebar.button(label="Abbrechen", on_click=click_cancel_button)
         if st.sidebar.button(label="Trotzdem Zurück"):
             clear_session_states_except_role_and_debug_mode()
-            if st.session_state.role == "Admin":
+            if st.session_state.role == "admin":
                 st.switch_page("pages/kompetenzbeurteilung.py")
-            elif st.session_state.role == "Mitarbeiter":
+            elif st.session_state.role == "user":
                 st.switch_page("pages/fragebogen_start.py")
     debug_menu()
