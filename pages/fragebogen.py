@@ -114,12 +114,12 @@ with st.form("Fragebogen"):
         if submit_button:
             if not check_none_answers():
                 submit_form()
-                if st.session_state.role == "admin":
+                if st.session_state.mode == "analyse":
                     st.switch_page("pages/kompetenzbeurteilung.py")
-                elif st.session_state.role == "user":
+                elif st.session_state.mode == "fragebogen":
                     st.switch_page("pages/fragebogen_start.py")
                 else:
-                    raise Exception("session_state.role not valid")
+                    raise Exception("session_state.mode not valid")
     if st.session_state.page > 1:
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
     if "none_error" in st.session_state and st.session_state.none_error:
