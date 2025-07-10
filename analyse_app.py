@@ -8,4 +8,4 @@ st.session_state.debug_mode = True
 create_empty_answers_dataframe()
 
 # -Startseite öffnen-
-st.switch_page("pages/visualisierung.py")
+st.switch_page("pages/analyse.py")
