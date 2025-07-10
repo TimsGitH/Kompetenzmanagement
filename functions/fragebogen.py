@@ -16,3 +16,4 @@ def select_clusters():
     selected_clusters_df = pd.DataFrame(selected_clusters)
     selected_clusters_df.set_index("Cluster-Nummer", inplace=True)
     return selected_clusters_df
+

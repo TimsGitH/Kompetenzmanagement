@@ -50,3 +50,4 @@ def no_menu():
             elif st.session_state.mode == "fragebogen":
                 st.switch_page("pages/fragebogen_start.py")
     debug_menu()
+
