@@ -25,3 +25,8 @@ TRANSLATE_ANSWER_INDEX = {
     None: None
 }
 
+# Filename für Google Sheets Service Account
+GSHEET_SERVICE_ACCOUNT_FILENAME = "/workspaces/Kompetenzmanagement/.streamlit/secrets.toml"
+
+# Name des Google Sheets Dokuments
+SHEET_NAME = "pro-kom daten"
