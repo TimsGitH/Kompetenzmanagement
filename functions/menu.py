@@ -26,7 +26,8 @@ def default_menu():
         st.sidebar.warning("Modus nicht definiert!")
     elif st.session_state.mode == "analyse":
         st.sidebar.header("Navigation")
-        st.sidebar.page_link("pages/visualisierung.py", label="Visualisierung")
+        st.sidebar.page_link("pages/analyse.py", label="Analyse")
+        st.sidebar.page_link("pages/diagnose.py", label="Diagnose")
         st.sidebar.page_link("pages/user_management.py", label="User Management")
         st.sidebar.page_link("pages/kompetenzbeurteilung.py", label="Kompetenzbeurteilung")
         st.sidebar.page_link("pages/admin.py", label="Admin")
