@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from config import PATH_PROFILES
 
 def create_profile(id, name):
     # Funktion zur Erstellung eines neuen Profils.
