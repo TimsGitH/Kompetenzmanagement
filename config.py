@@ -30,3 +30,8 @@ GSHEET_SERVICE_ACCOUNT_FILENAME = "/workspaces/Kompetenzmanagement/.streamlit/se
 
 # Name des Google Sheets Dokuments
 SHEET_NAME = "pro-kom daten"
+
+# Pfade zu Dateien
+PATH_PROFILES = "user_management/profiles.csv"
+PATH_ANSWERS = "antworten/antworten.csv"
+PATH_QUESTIONNAIRE = "fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv"
