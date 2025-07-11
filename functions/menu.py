@@ -32,9 +32,11 @@ def default_menu():
         st.sidebar.page_link("pages/kompetenzbeurteilung.py", label="Kompetenzbeurteilung")
         st.sidebar.page_link("pages/admin.py", label="Admin")
         st.sidebar.page_link("pages/export.py", label="Export")
+        st.sidebar.page_link("pages/test.py", label="Test")
     elif st.session_state.mode == "fragebogen":
         st.sidebar.header("Navigation")
         st.sidebar.page_link("pages/fragebogen_start.py", label="Fragebogen")
+        st.sidebar.page_link("pages/fragebogen_start_neu.py", label="Fragebogen - Beginn")
         st.sidebar.page_link("pages/export.py", label="Export")
     debug_menu()
 

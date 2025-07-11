@@ -6,12 +6,14 @@ from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAV
 from functions.menu import no_menu
 from functions.data import get_amount_questions, get_question_ids
 from functions.session_state import clear_session_states_except_mode_and_debug_mode
+from functions.database import get_dataframe_from_gsheet, update_dataframe_to_gsheet
 
 st.set_page_config(page_title="Fragebogen")
 
 no_menu()
 
 # -Profildaten einlesen-
+# TODO: In Google Sheets umwandeln
 data_profiles = pd.read_csv("user_management/profiles.csv", sep=';', index_col=0)
 
 # -Fragebogen einlesen-
@@ -53,7 +55,8 @@ def click_back():
 
 def submit_form():
     # Tabelle für Antworten verknüpfen
-    answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
+    answers = get_dataframe_from_gsheet("antworten")
+
     # Tabelle initialisieren
     questionnaire_id = answers.shape[0]
     timezone = pytz.timezone('Europe/Berlin')
@@ -63,17 +66,19 @@ def submit_form():
         "Speicherzeitpunkt": [formatted_timestamp],
         "Profil-ID": [st.session_state.id_active_profile]
     }
+
     # Antworten aus current_answers übernehmen
     for frage_id, antwort in st.session_state.current_answers.items():
         data_new_answers[frage_id] = [int(TRANSLATE_ANSWER_SAVE[antwort])]
     new_answers = pd.DataFrame(data_new_answers)
     new_answers.index = [questionnaire_id]
-    # Tabellen kombinieren und Antworten als int speichern
+
+    # Tabellen kombinieren
     combined_answers = pd.concat([answers, new_answers], axis=0)
-    #for question_id in question_ids:
-    #    if question_id in combined_answers.columns:
-    #        combined_answers[question_id] = combined_answers[question_id].astype(int)
-    combined_answers.to_csv("antworten/antworten.csv", sep=';', index_label="Antwort-ID")
+
+    # Tabelle in Google Sheets aktualisieren
+    update_dataframe_to_gsheet("new_worksheet", combined_answers) # TODO: new_worksheet ersetzen, sobald alles richtig funktioniert
+    
     # Session States aufräumen
     clear_session_states_except_mode_and_debug_mode()
 

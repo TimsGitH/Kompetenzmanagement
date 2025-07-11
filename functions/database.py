@@ -1,31 +1,35 @@
 import streamlit as st
-import gspread
 import pandas as pd
-from google.oauth2.service_account import Credentials
-from config import GSHEET_SERVICE_ACCOUNT_FILENAME, SHEET_NAME
+from streamlit_gsheets import GSheetsConnection
 
-def get_spreadsheet(file_name, spreadsheet_name):
-    """
-    TODO: Beschreibung der Funktion
-    TODO: Schlüssel korrekt in Secrets speichern und laden.
-    """
-    scopes = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    ]
-    credentials_dict = st.secrets["service_account"]
-    credentials = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
-    spreadsheet = gspread.authorize(credentials)
-    return spreadsheet.open(spreadsheet_name)
+def connect_to_gsheet():
+    return st.connection("gsheets", type=GSheetsConnection)
 
-def get_dataframe(worksheet_name):
+def get_dataframe_from_gsheet(worksheet_name):
     """
-    TODO: Beschreibung der Funktion
+    TODO: Übersetzen
+    Retrieves a DataFrame from a specified Google Sheets worksheet.
+    
+    Args:
+        worksheet_name (str): The name of the worksheet to retrieve data from.
+    
+    Returns:
+        pd.DataFrame: A DataFrame containing the data from the specified worksheet.
     """
-    spreadsheet = get_spreadsheet(GSHEET_SERVICE_ACCOUNT_FILENAME, SHEET_NAME)
-    worksheet = spreadsheet.worksheet(worksheet_name)
-    records = worksheet.get_all_records()
-    if records and list(records[0].keys()):
-        dataframe = pd.DataFrame(records).set_index(list(records[0].keys())[0])
-    else:
-        dataframe = pd.DataFrame()
+    conn = connect_to_gsheet()
+    import_dataframe = conn.read(worksheet=worksheet_name)
+    dataframe = pd.DataFrame(import_dataframe)
+    dataframe = dataframe.set_index(dataframe.columns[0])
     return dataframe
+
+def update_dataframe_to_gsheet(worksheet_name, dataframe):
+    """
+    TODO: Beschreibung hinzufügen
+    """
+    conn = connect_to_gsheet()
+    dataframe_without_index = dataframe.reset_index()
+    conn.update(worksheet=worksheet_name, data=dataframe_without_index)
+
+def create_worksheet(worksheet_name):
+    conn = connect_to_gsheet()
+    conn.create(worksheet=worksheet_name)
