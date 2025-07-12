@@ -82,7 +82,7 @@ def page_3():
     st.text_input(label="In welcher Abteilung oder in welchem Bereich sind Sie zurzeit tätig?", key="answer_0SD02")
     st.number_input(label="Wie lange gehören Sie bereits Ihrem aktuellen Team an? (Bitte geben Sie die Anzahl der Jahre an.)")
     st.number_input(label="Wie lange arbeiten Sie bereits in Ihrem aktuellen Unternehmen?")
-    st.checkbox(label="Haben Sie derzeit Personalverantwortung?")
+    st.checkbox(label="Haben Sie derzeit Personalverantwortung?") # TODO: Ja/Nein-Optionen
     st.number_input(label="Wie alt sind Sie?") # Möglichkeit nicht zu beantworten?
 
 def page_4():
@@ -109,7 +109,7 @@ with st.form("form_page"):
         if submit_button:
             if not check_errors():
                 update_answers()
-                st.switch_page("pages/fragebogen.py")
+                st.switch_page("pages/fragebogen_start.py")
     if st.session_state.page > 1:
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
     if "none_error" in st.session_state and st.session_state.none_error:
