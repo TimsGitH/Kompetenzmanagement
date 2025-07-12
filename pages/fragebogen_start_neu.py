@@ -80,10 +80,10 @@ def page_3():
     st.radio(label="Branche", options=OPTIONS_INDUSTRY + ["Sonstige"], key="answer_0SD01")
     st.text_input(label="Branche (Wenn Sonstige)", key="answer_0SD01B")
     st.text_input(label="In welcher Abteilung oder in welchem Bereich sind Sie zurzeit tätig?", key="answer_0SD02")
-    st.number_input(label="Wie lange gehören Sie bereits Ihrem aktuellen Team an? (Bitte geben Sie die Anzahl der Jahre an.)")
-    st.number_input(label="Wie lange arbeiten Sie bereits in Ihrem aktuellen Unternehmen?")
-    st.checkbox(label="Haben Sie derzeit Personalverantwortung?") # TODO: Ja/Nein-Optionen
-    st.number_input(label="Wie alt sind Sie?") # Möglichkeit nicht zu beantworten?
+    st.number_input(label="Wie lange gehören Sie bereits Ihrem aktuellen Team an? (Bitte geben Sie die Anzahl der Jahre an.)", min_value=0.5, max_value=99.0, step=0.5, key="answer_0SD03")
+    st.number_input(label="Wie lange arbeiten Sie bereits in Ihrem aktuellen Unternehmen?", min_value=0.5, max_value=99.0, step=0.5, key="answer_0SD04")
+    st.checkbox(label="Haben Sie derzeit Personalverantwortung? (ankreuzen falls ja)", key="answer_0SD05", value=False)
+    st.number_input(label="Wie alt sind Sie? (99 eingeben falls Sie nicht antworten möchten)", min_value=18, max_value=99, key="answer_0SD06") # TODO: Möglichkeit nicht zu beantworten?
 
 def page_4():
     st.header("Einleitung Kompetenzabfrage")
