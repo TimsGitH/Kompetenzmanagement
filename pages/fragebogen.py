@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime as dt
 import pytz
-from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAVE, TRANSLATE_ANSWER_INDEX
+from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAVE, TRANSLATE_ANSWER_INDEX, PATH_PROFILES, PATH_QUESTIONNAIRE
 from functions.menu import no_menu
 from functions.data import get_amount_questions, get_question_ids
 from functions.session_state import clear_session_states_except_mode_and_debug_mode
@@ -14,10 +14,10 @@ no_menu()
 
 # -Profildaten einlesen-
 # TODO: In Google Sheets umwandeln
-data_profiles = pd.read_csv("user_management/profiles.csv", sep=';', index_col=0)
+data_profiles = pd.read_csv(PATH_PROFILES, sep=';', index_col=0)
 
 # -Fragebogen einlesen-
-fragebogen = pd.read_csv("fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv", sep=';', encoding='utf-8')
+fragebogen = pd.read_csv(PATH_QUESTIONNAIRE, sep=';', encoding='utf-8')
 
 # -Funktionen-
 def check_none_answers():
