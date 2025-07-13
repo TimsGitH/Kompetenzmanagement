@@ -208,3 +208,107 @@ def get_cluster_values_over_time(id, cluster_name):
     })
     
     return result_df
+
+def load_bedarfe_from_google():
+    """
+    Lädt die Bedarfe aus der Google Tabelle.
+    
+    Returns:
+        pandas.DataFrame: DataFrame mit den Bedarfen für alle Profile
+    """
+    # TODO: Implementierung für Google Sheets API
+    # Für jetzt verwenden wir eine lokale CSV-Datei als Platzhalter
+    try:
+        # Platzhalter - später durch Google Sheets API ersetzen
+        bedarfe_df = pd.read_csv("bedarfe/bedarfe.csv", sep=';', index_col=0)
+        return bedarfe_df
+    except FileNotFoundError:
+        # Fallback: Erstelle leeren DataFrame mit korrekter Struktur
+        columns = ['Speicherzeitpunkt', 'Profil-ID'] + [f'cluster{i}' for i in range(1, 12)]
+        return pd.DataFrame(columns=columns, data=[])
+
+def get_bedarfe_for_profile(profile_id):
+    """
+    Ruft die Bedarfe für eine bestimmte Profil-ID ab.
+    
+    Args:
+        profile_id: Profil-ID für die die Bedarfe abgerufen werden sollen
+        
+    Returns:
+        list or None: Liste der Bedarfe für alle 11 Cluster oder None falls nicht gefunden
+    """
+    bedarfe_df = load_bedarfe_from_google()
+    
+    # Suche nach der Profil-ID
+    profile_bedarfe = bedarfe_df[bedarfe_df['Profil-ID'] == profile_id]
+    
+    if len(profile_bedarfe) == 0:
+        return None
+    
+    # Nehme den neuesten Eintrag (falls mehrere vorhanden)
+    sorted_bedarfe = profile_bedarfe.sort_values(by='Speicherzeitpunkt', ascending=False)
+    latest_bedarfe = sorted_bedarfe.iloc[0]
+    
+    # Extrahiere die Cluster-Bedarfe (cluster1 bis cluster11)
+    cluster_bedarfe = []
+    for i in range(1, 12):
+        cluster_bedarfe.append(latest_bedarfe[f'cluster{i}'])
+    
+    return cluster_bedarfe
+
+def get_available_bedarfe_profiles():
+    """
+    Ruft alle verfügbaren Profil-IDs aus der Bedarfe-Tabelle ab.
+    
+    Returns:
+        list: Liste der verfügbaren Profil-IDs
+    """
+    bedarfe_df = load_bedarfe_from_google()
+    
+    if bedarfe_df.empty:
+        return []
+    
+    # Extrahiere eindeutige Profil-IDs
+    available_profiles = bedarfe_df['Profil-ID'].unique().tolist()
+    return sorted(available_profiles)
+
+def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id):
+    """
+    Berechnet die Differenzen zwischen tatsächlichen Cluster-Werten und Bedarfen.
+    
+    Args:
+        actual_profile_id: Profil-ID für die tatsächlichen Werte
+        bedarfe_profile_id: Profil-ID für die Bedarfe
+        
+    Returns:
+        pandas.DataFrame: DataFrame mit Cluster-Namen und Differenzen
+    """
+    # Aktuelle Cluster-Werte laden
+    actual_values = get_latest_cluster_values(actual_profile_id)
+    if actual_values is None:
+        return pd.DataFrame()
+    
+    # Bedarfe laden
+    bedarfe_values = get_bedarfe_for_profile(bedarfe_profile_id)
+    if bedarfe_values is None:
+        return pd.DataFrame()
+    
+    # Cluster-Namen laden
+    cluster_names = get_cluster_names()
+    
+    # Differenzen berechnen (Ist - Bedarf)
+    differences = []
+    for i in range(len(cluster_names)):
+        diff = actual_values[i] - bedarfe_values[i]
+        differences.append(diff)
+    
+    # DataFrame erstellen
+    result_df = pd.DataFrame({
+        'Cluster': cluster_names,
+        'Differenz': differences
+    })
+    
+    # Nach Differenz sortieren (größte negative zuerst)
+    result_df = result_df.sort_values('Differenz', ascending=True)
+    
+    return result_df
