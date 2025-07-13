@@ -54,33 +54,47 @@ def click_back():
     st.session_state.page -= 1
 
 def submit_form():
-    # Tabelle für Antworten verknüpfen
-    answers = get_dataframe_from_gsheet("antworten")
+    try:
+        # Tabelle für Antworten verknüpfen
+        answers = get_dataframe_from_gsheet("antworten")
 
-    # Tabelle initialisieren
-    questionnaire_id = answers.shape[0]
-    timezone = pytz.timezone('Europe/Berlin')
-    timestamp = dt.datetime.now(timezone)
-    formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M')
-    data_new_answers = {
-        "Speicherzeitpunkt": [formatted_timestamp],
-        "Profil-ID": [st.session_state.id_active_profile]
-    }
+        # Tabelle initialisieren
+        questionnaire_id = answers.shape[0]
+        timezone = pytz.timezone('Europe/Berlin')
+        timestamp = dt.datetime.now(timezone)
+        formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M')
+        data_new_answers = {
+            "Speicherzeitpunkt": [formatted_timestamp],
+            "Profil-ID": [st.session_state.id_active_profile]
+        }
 
-    # Antworten aus current_answers übernehmen
-    for frage_id, antwort in st.session_state.current_answers.items():
-        data_new_answers[frage_id] = [int(TRANSLATE_ANSWER_SAVE[antwort])]
-    new_answers = pd.DataFrame(data_new_answers)
-    new_answers.index = [questionnaire_id]
+        # Alle Antworten aus current_answers übernehmen (inkl. Demographie)
+        for answer_id, antwort in st.session_state.current_answers.items():
+            if antwort in TRANSLATE_ANSWER_SAVE:
+                # Fragebogen-Antworten (numerisch speichern)
+                data_new_answers[answer_id] = [int(TRANSLATE_ANSWER_SAVE[antwort])]
+            else:
+                # Demographische Antworten (als String speichern)
+                data_new_answers[answer_id] = [str(antwort) if antwort is not None else ""]
+        
+        new_answers = pd.DataFrame(data_new_answers)
+        new_answers.index = [questionnaire_id]
 
-    # Tabellen kombinieren
-    combined_answers = pd.concat([answers, new_answers], axis=0)
+        # Tabellen kombinieren
+        combined_answers = pd.concat([answers, new_answers], axis=0)
 
-    # Tabelle in Google Sheets aktualisieren
-    update_dataframe_to_gsheet("new_worksheet", combined_answers) # TODO: new_worksheet ersetzen, sobald alles richtig funktioniert
-    
-    # Session States aufräumen
-    clear_session_states_except_mode_and_debug_mode()
+        # Tabelle in Google Sheets aktualisieren
+        update_dataframe_to_gsheet("new_worksheet", combined_answers) # TODO: new_worksheet ersetzen, sobald alles richtig funktioniert
+        
+        # Session States aufräumen
+        clear_session_states_except_mode_and_debug_mode()
+        
+        st.success("Fragebogen erfolgreich gespeichert!")
+        
+    except Exception as e:
+        st.error(f"Fehler beim Speichern des Fragebogens: {str(e)}")
+        st.info("Ihre Antworten wurden temporär gespeichert. Bitte versuchen Sie es später erneut.")
+        # Session States NICHT löschen, damit Antworten erhalten bleiben
 
 
 # -Werte und Listen laden-

@@ -14,8 +14,8 @@ no_menu()
 
 # Funktion zum Initialisieren der Session States für den Fragebogen Start.
 # TODO: Löschen, wenn nicht mehr benötigt
-if "page" not in st.session_state:
-    st.session_state.page = 1
+if "page_einleitung" not in st.session_state:
+    st.session_state.page_einleitung = 1
 
 # -Funktionen-
 def check_errors():
@@ -35,10 +35,25 @@ def update_answers():
     """
     Zusätzliche Informationen in Session State speichern
     """
-    return True # TEMP
-    for current_information_id in information_ids_current_page:
-        st.session_state.current_answers[current_information_id] = st.session_state[f"answer_{current_information_id}"]
-        del st.session_state[f"answer_{current_information_id}"]
+    # Demographische Antworten in current_answers speichern
+    demographic_answers = {
+        "0SD01": st.session_state.get("answer_0SD01"),
+        "0SD01B": st.session_state.get("answer_0SD01B"),
+        "0SD02": st.session_state.get("answer_0SD02"),
+        "0SD03": st.session_state.get("answer_0SD03"),
+        "0SD04": st.session_state.get("answer_0SD04"),
+        "0SD05": st.session_state.get("answer_0SD05"),
+        "0SD06": st.session_state.get("answer_0SD06")
+    }
+    
+    # current_answers initialisieren falls nicht vorhanden
+    if "current_answers" not in st.session_state:
+        st.session_state.current_answers = {}
+    
+    # Demographische Antworten hinzufügen
+    for key, value in demographic_answers.items():
+        if value is not None:
+            st.session_state.current_answers[key] = value
 
 def delete_errors():
     if "none_error" in st.session_state:
@@ -52,12 +67,12 @@ def click_continue():
     if not check_errors():
         delete_errors()
         update_answers()
-        st.session_state.page += 1
+        st.session_state.page_einleitung += 1
 
 def click_back():
     delete_errors()
     update_answers()
-    st.session_state.page -= 1
+    st.session_state.page_einleitung -= 1
 
 # -Titel-
 st.title("Fragebogen - Zusätzliche Informationen")
@@ -99,10 +114,10 @@ pages_dict = {
 
 # -Aufrufen der Seiten-
 with st.form("form_page"):
-    if st.session_state.page in pages_dict:
-        pages_dict[st.session_state.page]()
+    if st.session_state.page_einleitung in pages_dict:
+        pages_dict[st.session_state.page_einleitung]()
     left, right = st.columns(2)
-    if st.session_state.page < len(pages_dict):
+    if st.session_state.page_einleitung < len(pages_dict):
         continue_button = right.form_submit_button(label="Weiter", on_click=click_continue)
     else:
         submit_button = right.form_submit_button(label="Fragebogen beginnen")
@@ -110,7 +125,7 @@ with st.form("form_page"):
             if not check_errors():
                 update_answers()
                 st.switch_page("pages/fragebogen_start.py")
-    if st.session_state.page > 1:
+    if st.session_state.page_einleitung > 1:
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
     if "none_error" in st.session_state and st.session_state.none_error:
         st.warning("Bitte beantworten Sie alle Fragen.")
