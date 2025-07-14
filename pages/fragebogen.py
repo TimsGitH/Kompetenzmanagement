@@ -120,7 +120,16 @@ if 'page' not in st.session_state:
 st.progress((st.session_state.page - 1) / amount_pages, text="Fortschritt Fragebogen")
 
 # -Fragebogen-
-with st.form("Fragebogen"):
+def disable_submit_button():
+    """
+    Funktion den Submit-Button nach dem ersten Klick zu deaktivieren.
+    """
+    st.session_state.disabled_submit_button = True
+
+if "disabled_submit_button" not in st.session_state:
+    st.session_state.disabled_submit_button = False
+
+with st.form("Fragebogen", enter_to_submit=False):
     if st.session_state.page < amount_pages:
         amount_questions_in_page = AMOUNT_QUESTIONS_PER_PAGE
     else:
@@ -139,7 +148,7 @@ with st.form("Fragebogen"):
     if st.session_state.page < amount_pages:
         continue_button = right.form_submit_button(label="Weiter", on_click=click_continue)
     else:
-        submit_button = right.form_submit_button(label="Fragebogen abschließen")
+        submit_button = right.form_submit_button(label="Fragebogen abschließen", on_click=disable_submit_button, disabled=st.session_state.disabled_submit_button)
         if submit_button:
             if not check_none_answers():
                 update_answers()
@@ -147,7 +156,7 @@ with st.form("Fragebogen"):
                 if st.session_state.mode == "analyse":
                     st.switch_page("pages/kompetenzbeurteilung.py")
                 elif st.session_state.mode == "fragebogen":
-                    st.switch_page("pages/fragebogen_start.py")
+                    st.switch_page("pages/fragebogen_ende.py")
                 else:
                     raise Exception("session_state.mode not valid")
     if st.session_state.page > 1:
