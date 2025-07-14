@@ -14,10 +14,10 @@
 1PF01;1;Analytisches und kritisches Denken;Problemlösefähigkeit;Ich gehe Schritt für Schritt vor, um ein Problem zu lösen.;
 1PF02;1;Analytisches und kritisches Denken;Problemlösefähigkeit;Ich bewerte die Durchführbarkeit von Lösungen, bevor ich sie umsetze.;
 1KD01;1;Analytisches und kritisches Denken;Kritisches Denken;Ich prüfe widersprüchliche Informationen, bevor ich sie vorschnell verwerfe.;
-1KD02;1;Analytisches und kritisches Denken;Kritisches Denken;Ich passe meine Schlussfolgerungen an, wenn ich neue Informationen zu meinen Annahmen bekomme. ;
+1KD02;1;Analytisches und kritisches Denken;Kritisches Denken;Ich passe meine Schlussfolgerungen an, wenn ich neue Informationen zu meinen Annahmen bekomme.;
 2KF01;2;Kommunikative Fähigkeit;Kommunikationsfähigkeit;Ich drücke meine Gedanken immer klar und präzise aus.;
 2KF02;2;Kommunikative Fähigkeit;Kommunikationsfähigkeit;Meine Wortwahl und Erklärweise passe ich an meine Zielgruppe und die Gesprächssituation an.;
-2KF03;2;Kommunikative Fähigkeit;Kommunikationsfähigkeit;Beim Sprechen achte ich darauf, meine Ideen Logisch zu sortieren.;
+2KF03;2;Kommunikative Fähigkeit;Kommunikationsfähigkeit;Beim Sprechen achte ich darauf, meine Ideen logisch zu sortieren.;
 2KF04;2;Kommunikative Fähigkeit;Kommunikationsfähigkeit;Selbst in schwierigen Situationen kann ich meine Aussagen effizient kommunizieren.;
 2SP01;2;Kommunikative Fähigkeit;Sprachen;Es fällt mir manchmal schwer, die richtigen Worte zu finden. ;True
 2SP02;2;Kommunikative Fähigkeit;Sprachen;"Ich vermeide vage Ausdrücke wie „Du weißt, was ich meine“ oder „So ungefähr"".";
@@ -25,7 +25,7 @@
 2DF01;2;Kommunikative Fähigkeit;Dialogfähigkeit;Ich finde in Gesprächen meist die richtige Balance zwischen Zuhören und Sprechen.;
 2DF02;2;Kommunikative Fähigkeit;Dialogfähigkeit;Ich halte das Gespräch am Laufen, indem ich relevante Fragen stelle.;
 2VF01;2;Kommunikative Fähigkeit;Verständnisfähigkeit;Ich muss andere selten bitten, das Gesagte zu wiederholen.;
-2VF02;2;Kommunikative Fähigkeit;Verständnisfähigkeit;Selbst nach inhaltlich komplexen Gesrächen, kann ich den Inhalt in anderen Worten wiedergeben. ;
+2VF02;2;Kommunikative Fähigkeit;Verständnisfähigkeit;Selbst nach inhaltlich komplexen Gesprächen, kann ich den Inhalt in anderen Worten wiedergeben. ;
 2SF01;2;Kommunikative Fähigkeit;Schlagfertigkeit;In unerwarteten Gesprächen finde ich schnell passende Worte.;
 2SF02;2;Kommunikative Fähigkeit;Schlagfertigkeit;Wenn mich jemand provoziert, bin ich oft sprachlos oder überfordert.;True
 2VH01;2;Kommunikative Fähigkeit;Verhandlungsfähigkeit;Ich bleibe ruhig und artikuliert während schwieriger Diskussionen.;
@@ -75,7 +75,7 @@
 5SW02;5;Selbstwirksamkeit und Selbstbewusstsein;AKSU - Selbstwirksamkeit;Die meisten Probleme kann ich aus eigener Kraft gut meistern.;
 5SW03;5;Selbstwirksamkeit und Selbstbewusstsein;AKSU - Selbstwirksamkeit;Auch anstrengende und komplizierte Aufgaben kann ich in der Regel gut lösen. ;
 5SV01;5;Selbstwirksamkeit und Selbstbewusstsein;STARC-5 - Self-esteem/Selbstvertrauen ;Ich fühle mich wertgeschätzt.;
-5SV02;5;Selbstwirksamkeit und Selbstbewusstsein;STARC-5 - Self-esteem/Selbstvertrauen ;Ich fühle mich schweren Situationen gewachsen.;
+5SV02;5;Selbstwirksamkeit und Selbstbewusstsein;STARC-5 - Self-esteem/Selbstvertrauen ;Ich fühle mich schwierigen Situationen gewachsen.;
 5SV03;5;Selbstwirksamkeit und Selbstbewusstsein;STARC-5 - Self-esteem/Selbstvertrauen ;Gut über mich zu sprechen, fällt mir leicht.;
 5SV04;5;Selbstwirksamkeit und Selbstbewusstsein;STARC-5 - Self-esteem/Selbstvertrauen ;Ich glaube an mich.;
 5SV05;5;Selbstwirksamkeit und Selbstbewusstsein;STARC-5 - Self-esteem/Selbstvertrauen ;Ich habe viele positive Seiten.;
@@ -123,7 +123,7 @@
 9OF04;9;Management- und Organisationskompetenz;Organisationsfähigkeit;Ich setze Prioritäten klar und passe sie bei Bedarf flexibel an.;
 12KF02;9;Management- und Organisationskompetenz;KONTROLLFRAGE;"Dies ist eine Kontrollfrage, bitte kreuzen sie hier ""Ich stimmeher nicht zu"" an. ";
 9AB01;9;Management- und Organisationskompetenz;Ausführungsbereitschaft ;Ich bringe Aufgaben konsequent zum Abschluss. ;
-9AB02;9;Management- und Organisationskompetenz;Ausführungsbereitschaft ;Ich habe manchmal Schwierigkeiten bei der termingerechten Umsetzung von Maßnahmen. ;True
+9AB02;9;Management- und Organisationskompetenz;Ausführungsbereitschaft ;Ich habe manchmal Schwierigkeiten bei der termingerechten Umsetzung von Maßnahmen.;True
 9AB03;9;Management- und Organisationskompetenz;Ausführungsbereitschaft ;Ich lasse mich nicht durch unerwartete Herausforderungen von meinen Zielen abbringen.;
 9AB04;9;Management- und Organisationskompetenz;Ausführungsbereitschaft ;Ich sorge dafür, dass geplante Maßnahmen nachhaltig in die Praxis überführt werden.;
 9EF01;9;Management- und Organisationskompetenz;Entscheidungsfähigkeit;Es fällt mir leicht Entscheidungen zu treffen. ;

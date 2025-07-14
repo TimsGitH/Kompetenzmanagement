@@ -62,7 +62,7 @@ def submit_form():
         questionnaire_id = answers.shape[0]
         timezone = pytz.timezone('Europe/Berlin')
         timestamp = dt.datetime.now(timezone)
-        formatted_timestamp = timestamp.strftime('%Y-%m-%d %H:%M')
+        formatted_timestamp = timestamp.strftime('%d.%m.%Y %H:%M')
         data_new_answers = {
             "Speicherzeitpunkt": [formatted_timestamp],
             "Profil-ID": [st.session_state.id_active_profile]
@@ -163,3 +163,4 @@ with st.form("Fragebogen", enter_to_submit=False):
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
     if "none_error" in st.session_state and st.session_state.none_error:
         st.warning("Bitte beantworten Sie alle Fragen.")
+
