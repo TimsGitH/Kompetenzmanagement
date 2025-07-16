@@ -8,4 +8,4 @@ st.session_state.debug_mode = False
 create_empty_answers_dataframe()
 
 # -Startseite öffnen-
-st.switch_page("pages/fragebogen_start_neu.py")
+st.switch_page("pages/fragebogen_start.py")

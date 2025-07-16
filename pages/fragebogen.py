@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime as dt
 import pytz
-from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAVE, TRANSLATE_ANSWER_INDEX, PATH_PROFILES, PATH_QUESTIONNAIRE
+from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAVE, TRANSLATE_ANSWER_INDEX, PATH_PROFILES, PATH_QUESTIONNAIRE, ADDITIONAL_INFORMATION_IDS, GOOGLE_SHEET_ANSWERS
 from functions.menu import no_menu
 from functions.data import get_amount_questions, get_question_ids
 from functions.session_state import clear_session_states_except_mode_and_debug_mode
@@ -56,7 +56,7 @@ def click_back():
 def submit_form():
     try:
         # Tabelle für Antworten verknüpfen
-        answers = get_dataframe_from_gsheet("antworten")
+        answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS)
 
         # Tabelle initialisieren
         questionnaire_id = answers.shape[0]
@@ -68,13 +68,20 @@ def submit_form():
             "Profil-ID": [st.session_state.id_active_profile]
         }
 
-        # Alle Antworten aus current_answers übernehmen (inkl. Demographie)
+        # Zuerst demografische Antworten speichern
+        for demo_id in ADDITIONAL_INFORMATION_IDS:
+            antwort = st.session_state.current_answers.get(demo_id)
+            data_new_answers[demo_id] = [str(antwort) if antwort is not None else ""]
+
+        # Dann alle anderen Antworten speichern (außer Demographie)
         for answer_id, antwort in st.session_state.current_answers.items():
+            if answer_id in ADDITIONAL_INFORMATION_IDS:
+                continue  # Schon gespeichert
             if antwort in TRANSLATE_ANSWER_SAVE:
                 # Fragebogen-Antworten (numerisch speichern)
                 data_new_answers[answer_id] = [int(TRANSLATE_ANSWER_SAVE[antwort])]
             else:
-                # Demographische Antworten (als String speichern)
+                # Sonstige Antworten (als String speichern)
                 data_new_answers[answer_id] = [str(antwort) if antwort is not None else ""]
         
         new_answers = pd.DataFrame(data_new_answers)
@@ -84,7 +91,7 @@ def submit_form():
         combined_answers = pd.concat([answers, new_answers], axis=0)
 
         # Tabelle in Google Sheets aktualisieren
-        update_dataframe_to_gsheet("new_worksheet", combined_answers) # TODO: new_worksheet ersetzen, sobald alles richtig funktioniert
+        update_dataframe_to_gsheet(GOOGLE_SHEET_ANSWERS, combined_answers)
         
         # Session States aufräumen
         clear_session_states_except_mode_and_debug_mode()
@@ -142,7 +149,7 @@ with st.form("Fragebogen", enter_to_submit=False):
         current_question_text = fragebogen.loc[fragebogen["Frage-ID"] == current_question_id, "Frage"].values[0]
         st.markdown(body = current_question_text)
         current_answer = st.session_state.current_answers[current_question_id]
-        radio_button = st.radio(label="", options=OPTIONS_FORM, index=TRANSLATE_ANSWER_INDEX[current_answer], key=f"answer_{current_question_id}", horizontal=True, label_visibility="collapsed")
+        radio_button = st.radio(label=f"Frage {current_question_id}", options=OPTIONS_FORM, index=TRANSLATE_ANSWER_INDEX[current_answer], key=f"answer_{current_question_id}", horizontal=True, label_visibility="collapsed")
     st.write(f"Seite {st.session_state.page} von {amount_pages}")
     left, right = st.columns(2)
     if st.session_state.page < amount_pages:

@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
-from functions.menu import no_menu
+from functions.menu import default_menu
 from functions.user_management import create_profile
 from functions.initialize import initialize_fragebogen
 
 st.set_page_config(page_title="Fragebogen")
 
-no_menu()
+default_menu()
 
 # -Profildaten einlesen-
 data_profiles = pd.read_csv("user_management/profiles.csv", sep=';', index_col=0)
@@ -26,7 +26,7 @@ if set_id_active_profile is not None:
             st.session_state.id_active_profile = set_id_active_profile
             st.session_state.name_active_profile = set_name_active_profile
             initialize_fragebogen()
-            st.switch_page("pages/fragebogen.py")
+            st.switch_page("pages/fragebogen_start_neu.py")
     else:
         st.write(f"Kein Profil mit der ID {set_id_active_profile} gefunden.")
         set_name_active_profile = st.text_input(label="Profil Name")

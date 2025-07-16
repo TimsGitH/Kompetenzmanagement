@@ -34,7 +34,7 @@ def default_menu():
         st.sidebar.page_link("pages/export.py", label="Export")
     elif st.session_state.mode == "fragebogen":
         st.sidebar.header("Navigation")
-        st.sidebar.page_link("pages/fragebogen_start_neu.py", label="Fragebogen - Beginn")
+        st.sidebar.page_link("pages/fragebogen_start.py", label="Fragebogen - Beginn")
         st.sidebar.page_link("pages/export.py", label="Export")
         st.sidebar.page_link("pages/datengenerierung.py", label="Datengenerierung")
     debug_menu()
