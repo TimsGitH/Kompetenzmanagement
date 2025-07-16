@@ -3,14 +3,14 @@ import pandas as pd
 import datetime as dt
 import pytz
 from config import INTRODUCTION_TEXT, CONSENT_TEXT, DEMOGRAPHY_TEXT, OPTIONS_INDUSTRY, INTRODUCTION_QUERRY
-from functions.menu import no_menu
+from functions.menu import default_menu
 from functions.data import get_amount_questions, get_question_ids
 from functions.session_state import clear_session_states_except_mode_and_debug_mode
 from functions.database import get_dataframe_from_gsheet, update_dataframe_to_gsheet
 
 st.set_page_config(page_title="Fragebogen")
 
-no_menu()
+default_menu()
 
 # Funktion zum Initialisieren der Session States für den Fragebogen Start.
 # TODO: Löschen, wenn nicht mehr benötigt

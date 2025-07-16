@@ -50,6 +50,6 @@ def no_menu():
             if st.session_state.mode == "analyse":
                 st.switch_page("pages/kompetenzbeurteilung.py")
             elif st.session_state.mode == "fragebogen":
-                st.switch_page("pages/fragebogen_start.py")
+                st.switch_page("pages/fragebogen_start_neu.py")
     debug_menu()
 

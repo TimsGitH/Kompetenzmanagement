@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
-from functions.menu import default_menu
+from functions.menu import no_menu
 from functions.user_management import create_profile
 from functions.initialize import initialize_fragebogen
 
 st.set_page_config(page_title="Fragebogen")
 
-default_menu()
+no_menu()
 
 # -Profildaten einlesen-
 data_profiles = pd.read_csv("user_management/profiles.csv", sep=';', index_col=0)

@@ -4,9 +4,12 @@ from generate_random_data import generate_random_row, save_row_to_csv, DEMOGRAPH
 from functions.data import get_cluster_numbers, get_question_ids
 import pandas as pd
 import os
+from functions.menu import default_menu
 
 st.set_page_config(page_title="Datengenerierung")
 st.title("Datengenerierung für Fragebogen-Datensätze")
+
+default_menu()
 
 # Index bestimmen (fortlaufend)
 def get_next_index():
