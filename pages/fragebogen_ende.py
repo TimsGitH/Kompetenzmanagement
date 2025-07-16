@@ -12,3 +12,4 @@ Herzlichen Dank, dass Sie den Fragebogen ausgefüllt haben.
 
 Ihre Antworten wurden erfolgreich übermittelt.
 """)
+
