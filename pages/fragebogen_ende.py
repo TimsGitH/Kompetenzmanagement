@@ -8,7 +8,7 @@ default_menu()
 st.title("Vielen Dank für Ihre Teilnahme!")
 
 st.markdown("""
-Herzlichen Dank, dass Sie den Fragebogen ausgefüllt haben.
+Herzlichen Dank, dass Sie den Fragebogen ausgefüllt haben!
 
 Ihre Antworten wurden erfolgreich übermittelt.
 """)
