@@ -19,7 +19,7 @@ OPTIONS_INDUSTRY = [
 ]
 
 # IDs der zusätzlichen Informationen
-ADDITINOAL_INFORMATION_IDS = ["0SD01", "0SD02", "0SD03", "0SD04", "0SD05", "0SD06"]
+ADDITIONAL_INFORMATION_IDS = ["0SD01", "0SD01B", "0SD02", "0SD03", "0SD04", "0SD05", "0SD06"]
 
 # Anzahl Fragen pro Seite im Fragebogen
 AMOUNT_QUESTIONS_PER_PAGE = 12
@@ -46,6 +46,7 @@ TRANSLATE_ANSWER_INDEX = {
 PATH_PROFILES = "user_management/profiles.csv"
 PATH_ANSWERS = "antworten/antworten.csv"
 PATH_QUESTIONNAIRE = "fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv"
+GOOGLE_SHEET_ANSWERS = "antworten"
 
 INTRODUCTION_TEXT = '''Herzlich willkommen zur Kompetenzbefragung im Rahmen des Forschungsprojekts pro-kom!  
   
