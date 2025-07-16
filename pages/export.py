@@ -25,4 +25,4 @@ answers_csv = convert_for_download(answers)
 
 # -Download Buttons-
 # st.download_button(label="Export Profildaten", data=data_profiles_csv, file_name="user_management/profiles.csv")
-st.download_button(label="Export Antworten", data=answers_csv, file_name="antworten/antworten.csv")
+st.download_button(label="Export Antworten", data=answers_csv, file_name="antworten.csv")
