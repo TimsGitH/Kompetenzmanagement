@@ -3,6 +3,6 @@ pandas>=2.1
 numpy>=1.24
 pytz>=2023.3
 plotly>=5.18
-gspread>=6.2.1
+gspread>=5.8,<6
 st-gsheets-connection==0.1.0
 streamlit_gsheets>=0.1.3
