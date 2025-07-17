@@ -3,8 +3,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from functions.menu import default_menu
-from functions.data import get_cluster_names, get_latest_cluster_values, get_latest_update_time, get_cluster_values_over_time, get_available_bedarfe_profiles, calculate_cluster_differences
-from config import PATH_PROFILES
+from functions.data import get_cluster_names, get_latest_cluster_values, get_selected_cluster_values, get_latest_update_time, get_cluster_values_over_time, get_available_bedarfe_profiles, calculate_cluster_differences
+from config import PATH_PROFILES, PATH_ANSWERS
 
 # -Seitenkonfiguration-
 st.set_page_config(page_title="Visualisierung", layout="wide")
@@ -12,6 +12,7 @@ default_menu()
 
 # -Tabelle für Profile verknüpfen-
 data_profiles = pd.read_csv(PATH_PROFILES, sep=';', index_col=0)
+data_answers = pd.read_csv(PATH_ANSWERS, sep=';', index_col=1)
 
 # -Profilauswahl (oben)-
 
@@ -19,6 +20,9 @@ st.title("Visualisierung")
 
 set_name_active_profile = st.selectbox("Profil auswählen:", data_profiles[["Name"]])
 set_id_active_profile = data_profiles.index[data_profiles["Name"] == set_name_active_profile][0]
+
+filtered_update_time = data_answers.index[data_answers["Profil-ID"] == set_id_active_profile]
+set_update_time_active_profile = st.selectbox("Zeitpunkt auswählen:", filtered_update_time)
 
 with st.container():
     cols = st.columns(2)
@@ -29,7 +33,7 @@ with st.container():
             
             st.header("Kompetenzen")
             df_radar = dict(
-                Wert=get_latest_cluster_values(set_id_active_profile),
+                Wert=get_selected_cluster_values(set_id_active_profile, set_update_time_active_profile),
                 Kategorie=get_cluster_names()
             )
             radar_chart = px.line_polar(df_radar, r="Wert", theta="Kategorie", range_r=[0,5], line_close=True)
@@ -98,7 +102,7 @@ with st.container():
                 )
                 
                 # Differenzen berechnen
-                differences_df = calculate_cluster_differences(set_id_active_profile, selected_bedarfe_profile)
+                differences_df = calculate_cluster_differences(set_id_active_profile, selected_bedarfe_profile, set_update_time_active_profile)
                 
                 if not differences_df.empty:
                     # Farben für positive/negative Abweichungen

@@ -146,6 +146,26 @@ def get_latest_cluster_values(id):
     latest_answer = sorted_answers.iloc[0]
     return calculate_cluster_values(latest_answer)
 
+
+def get_selected_cluster_values(id, timestamp):
+    """
+    Berechnet die Cluster-Werte aus dem aktuellsten Fragebogen für eine bestimmte Profil-ID.
+
+    Args:
+        id: Profil-ID für die die Cluster-Werte berechnet werden sollen
+        timestamp: Zeitpunkt für den die Cluster-Werte berechnet werden sollen
+
+    Returns:
+        list or None: Liste der Cluster-Werte oder None falls keine Antworten vorhanden
+    """
+    answers = pd.read_csv(PATH_ANSWERS, sep=';', index_col=0)
+    filtered_answers = answers[(answers["Profil-ID"] == id) & (answers["Speicherzeitpunkt"] == timestamp)]
+    if len(filtered_answers) == 0:
+        return None
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    latest_answer = sorted_answers.iloc[0]
+    return calculate_cluster_values(latest_answer)
+
 def load_profiles_with_ids(csv_path: str) -> list[str]:
     """
     Liest eine CSV-Datei mit Profilen und gibt eine Liste von Strings im Format "ID, Name" zurück.
@@ -272,19 +292,21 @@ def get_available_bedarfe_profiles():
     available_profiles = bedarfe_df['Profil-ID'].unique().tolist()
     return sorted(available_profiles)
 
-def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id):
+def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id, timestamp):
     """
     Berechnet die Differenzen zwischen tatsächlichen Cluster-Werten und Bedarfen.
     
     Args:
         actual_profile_id: Profil-ID für die tatsächlichen Werte
         bedarfe_profile_id: Profil-ID für die Bedarfe
+        timestamp: Speicherzeitpunkt der tatsächlichen Werte
         
     Returns:
         pandas.DataFrame: DataFrame mit Cluster-Namen und Differenzen
     """
     # Aktuelle Cluster-Werte laden
-    actual_values = get_latest_cluster_values(actual_profile_id)
+    #actual_values = get_latest_cluster_values(actual_profile_id)
+    actual_values = get_selected_cluster_values(actual_profile_id, timestamp)
     if actual_values is None:
         return pd.DataFrame()
     
