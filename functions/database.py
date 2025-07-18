@@ -6,22 +6,24 @@ def connect_to_gsheet():
     """
     Verbindet mit der Google Tabelle.
     """
-    return st.connection("gsheets", type=GSheetsConnection)
+    return st.connection("gsheets", type=GSheetsConnection, ttl=0)
 
-def get_dataframe_from_gsheet(worksheet_name):
+def get_dataframe_from_gsheet(worksheet_name, index_col = None, refresh_time_in_minutes = 30):
     """
     Lädt einen DataFrame aus der Google Tabelle.
     
     Args:
         worksheet_name (str): Der Name des Arbeitsblatts.
+        index_col (int oder str, optional): Die Spalte, die als Index gesetzt werden soll. Standard ist 0 (erste Spalte).
     
     Returns:
         pd.DataFrame: Ein DataFrame, der die Daten aus dem angegebenen Arbeitsblatt enthält.
     """
     conn = connect_to_gsheet()
-    import_dataframe = conn.read(worksheet=worksheet_name)
+    import_dataframe = conn.read(worksheet=worksheet_name, ttl=refresh_time_in_minutes)
     dataframe = pd.DataFrame(import_dataframe)
-    dataframe = dataframe.set_index(dataframe.columns[0])
+    if index_col is not None:
+        dataframe = dataframe.set_index(index_col)
     return dataframe
 
 def update_dataframe_to_gsheet(worksheet_name, dataframe):
@@ -38,4 +40,5 @@ def update_dataframe_to_gsheet(worksheet_name, dataframe):
 def create_worksheet(worksheet_name):
     conn = connect_to_gsheet()
     conn.create(worksheet=worksheet_name)
+
 

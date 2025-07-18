@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
-from config import PATH_PROFILES
+from config import GOOGLE_SHEET_PROFILES, COLUMN_PROFILE_ID
+from functions.database import get_dataframe_from_gsheet, update_dataframe_to_gsheet
 
 def create_profile(id, name):
     # Funktion zur Erstellung eines neuen Profils.
-    data_profiles = pd.read_csv(PATH_PROFILES, sep=';', index_col=0)
+    data_profiles = get_dataframe_from_gsheet(GOOGLE_SHEET_PROFILES, index_col=COLUMN_PROFILE_ID)
     data_profiles.loc[id, "Name"] = name
-    data_profiles.to_csv(PATH_PROFILES, sep=';', index_label="Profil-ID")
+    update_dataframe_to_gsheet(GOOGLE_SHEET_PROFILES, data_profiles)

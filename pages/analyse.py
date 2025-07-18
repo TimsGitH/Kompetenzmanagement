@@ -4,15 +4,17 @@ import plotly.express as px
 import plotly.graph_objects as go
 from functions.menu import default_menu
 from functions.data import get_cluster_names, get_latest_cluster_values, get_selected_cluster_values, get_latest_update_time, get_cluster_values_over_time, get_available_bedarfe_profiles, calculate_cluster_differences
-from config import PATH_PROFILES, PATH_ANSWERS
+from config import GOOGLE_SHEET_ANSWERS, COLUMN_TIMESTAMP, GOOGLE_SHEET_PROFILES, COLUMN_PROFILE_ID
+from functions.database import get_dataframe_from_gsheet
 
 # -Seitenkonfiguration-
 st.set_page_config(page_title="Visualisierung", layout="wide")
 default_menu()
 
 # -Tabelle für Profile verknüpfen-
-data_profiles = pd.read_csv(PATH_PROFILES, sep=';', index_col=0)
-data_answers = pd.read_csv(PATH_ANSWERS, sep=';', index_col=1)
+data_profiles = get_dataframe_from_gsheet(GOOGLE_SHEET_PROFILES, index_col=COLUMN_PROFILE_ID)
+data_answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_TIMESTAMP)
+
 
 # -Profilauswahl (oben)-
 
