@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime as dt
 import pytz
-from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAVE, TRANSLATE_ANSWER_INDEX, PATH_PROFILES, PATH_QUESTIONNAIRE, ADDITIONAL_INFORMATION_IDS, GOOGLE_SHEET_ANSWERS
+from config import AMOUNT_QUESTIONS_PER_PAGE, OPTIONS_FORM, TRANSLATE_ANSWER_SAVE, TRANSLATE_ANSWER_INDEX, PATH_QUESTIONNAIRE, ADDITIONAL_INFORMATION_IDS, GOOGLE_SHEET_ANSWERS, COLUMN_PROFILE_ID, GOOGLE_SHEET_PROFILES, COLUMN_INDEX
 from functions.menu import no_menu
 from functions.data import get_amount_questions, get_question_ids
 from functions.session_state import clear_session_states_except_mode_and_debug_mode
@@ -14,7 +14,7 @@ no_menu()
 
 # -Profildaten einlesen-
 # TODO: In Google Sheets umwandeln
-data_profiles = pd.read_csv(PATH_PROFILES, sep=';', index_col=0)
+data_profiles = get_dataframe_from_gsheet(GOOGLE_SHEET_PROFILES, index_col=COLUMN_PROFILE_ID)
 
 # -Fragebogen einlesen-
 fragebogen = pd.read_csv(PATH_QUESTIONNAIRE, sep=';', encoding='utf-8')
@@ -56,7 +56,7 @@ def click_back():
 def submit_form():
     try:
         # Tabelle für Antworten verknüpfen
-        answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS)
+        answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
 
         # Tabelle initialisieren
         questionnaire_id = answers.shape[0]
@@ -160,12 +160,7 @@ with st.form("Fragebogen", enter_to_submit=False):
             if not check_none_answers():
                 update_answers()
                 submit_form()
-                if st.session_state.mode == "analyse":
-                    st.switch_page("pages/kompetenzbeurteilung.py")
-                elif st.session_state.mode == "fragebogen":
-                    st.switch_page("pages/fragebogen_ende.py")
-                else:
-                    raise Exception("session_state.mode not valid")
+                st.switch_page("pages/fragebogen_ende.py")
     if st.session_state.page > 1:
         back_button = left.form_submit_button(label="Zurück", on_click=click_back)
     if "none_error" in st.session_state and st.session_state.none_error:

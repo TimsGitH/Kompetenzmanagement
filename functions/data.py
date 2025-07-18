@@ -1,5 +1,6 @@
 import pandas as pd
-from config import PATH_ANSWERS, PATH_QUESTIONNAIRE
+from config import PATH_QUESTIONNAIRE, GOOGLE_SHEET_ANSWERS, COLUMN_INDEX
+from functions.database import get_dataframe_from_gsheet
 
 def get_amount_questions():
     """
@@ -96,7 +97,7 @@ def get_cluster_values_with_times(id):
         pandas.DataFrame: DataFrame mit Cluster-Werten und Zeitpunkten für die gegebene Profil-ID
     """
     # Funktion zum Abrufen der Cluster-Werte mit entsprechenden Zeitpunkten.
-    answers = pd.read_csv(PATH_ANSWERS, sep=';', index_col=0)
+    answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
     return answers[answers["Profil-ID"] == id]
 
 def get_question_ids():
@@ -121,7 +122,7 @@ def get_latest_update_time(id):
         str or None: Zeitpunkt des letzten Eintrags oder None falls keine Einträge vorhanden
     """
     # Funktion zum Abrufen des letzten Eintrags für die gegebene ID.
-    answers = pd.read_csv(PATH_ANSWERS, sep=';', index_col=0)
+    answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
     filtered_answers = answers[answers["Profil-ID"] == id]
     if len(filtered_answers) == 0:
         return None
@@ -138,8 +139,28 @@ def get_latest_cluster_values(id):
     Returns:
         list or None: Liste der Cluster-Werte oder None falls keine Antworten vorhanden
     """
-    answers = pd.read_csv(PATH_ANSWERS, sep=';', index_col=0)
+    answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
     filtered_answers = answers[answers["Profil-ID"] == id]
+    if len(filtered_answers) == 0:
+        return None
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    latest_answer = sorted_answers.iloc[0]
+    return calculate_cluster_values(latest_answer)
+
+
+def get_selected_cluster_values(id, timestamp):
+    """
+    Berechnet die Cluster-Werte aus dem aktuellsten Fragebogen für eine bestimmte Profil-ID.
+
+    Args:
+        id: Profil-ID für die die Cluster-Werte berechnet werden sollen
+        timestamp: Zeitpunkt für den die Cluster-Werte berechnet werden sollen
+
+    Returns:
+        list or None: Liste der Cluster-Werte oder None falls keine Antworten vorhanden
+    """
+    answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
+    filtered_answers = answers[(answers["Profil-ID"] == id) & (answers["Speicherzeitpunkt"] == timestamp)]
     if len(filtered_answers) == 0:
         return None
     sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
@@ -177,7 +198,7 @@ def get_cluster_values_over_time(id, cluster_name):
         pandas.DataFrame: DataFrame mit Zeitpunkten und Cluster-Werten für die gegebene Kategorie
     """
     # Alle Antworten für die Profil-ID laden
-    answers = pd.read_csv(PATH_ANSWERS, sep=';', index_col=0)
+    answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
     filtered_answers = answers[answers["Profil-ID"] == id]
     
     if len(filtered_answers) == 0:
@@ -272,19 +293,21 @@ def get_available_bedarfe_profiles():
     available_profiles = bedarfe_df['Profil-ID'].unique().tolist()
     return sorted(available_profiles)
 
-def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id):
+def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id, timestamp):
     """
     Berechnet die Differenzen zwischen tatsächlichen Cluster-Werten und Bedarfen.
     
     Args:
         actual_profile_id: Profil-ID für die tatsächlichen Werte
         bedarfe_profile_id: Profil-ID für die Bedarfe
+        timestamp: Speicherzeitpunkt der tatsächlichen Werte
         
     Returns:
         pandas.DataFrame: DataFrame mit Cluster-Namen und Differenzen
     """
     # Aktuelle Cluster-Werte laden
-    actual_values = get_latest_cluster_values(actual_profile_id)
+    #actual_values = get_latest_cluster_values(actual_profile_id)
+    actual_values = get_selected_cluster_values(actual_profile_id, timestamp)
     if actual_values is None:
         return pd.DataFrame()
     

@@ -4,7 +4,7 @@ import os
 from functions import data
 from config import PATH_ANSWERS
 
-def create_empty_answers_dataframe():
+def create_empty_answers_dataframe():   #TODO: In Google Sheets umwandeln oder löschen (mit def create_worksheet?!)
     # Leere Tabelle für Antworten erstellen, falls keine existiert
     if not os.path.exists(PATH_ANSWERS):
         column_names = ["Speicherzeitpunkt", "Profil-ID"]

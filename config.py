@@ -43,10 +43,15 @@ TRANSLATE_ANSWER_INDEX = {
 }
 
 # Pfade zu Dateien
-PATH_PROFILES = "user_management/profiles.csv"
 PATH_ANSWERS = "antworten/antworten.csv"
 PATH_QUESTIONNAIRE = "fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv"
 GOOGLE_SHEET_ANSWERS = "antworten"
+GOOGLE_SHEET_PROFILES = "profile"
+
+# Spaltennamen
+COLUMN_TIMESTAMP = "Speicherzeitpunkt"
+COLUMN_PROFILE_ID = "Profil-ID"
+COLUMN_INDEX = "index"
 
 INTRODUCTION_TEXT = '''Herzlich willkommen zur Kompetenzbefragung im Rahmen des Forschungsprojekts pro-kom!  
   

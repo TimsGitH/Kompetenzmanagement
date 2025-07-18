@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from functions.menu import default_menu
 from functions.user_management import create_profile
+from config import GOOGLE_SHEET_PROFILES, COLUMN_PROFILE_ID, GOOGLE_SHEET_ANSWERS, COLUMN_INDEX
+from functions.database import get_dataframe_from_gsheet
 
 st.set_page_config(page_title="User Management")
 
@@ -33,10 +35,10 @@ def submenu_edit():
     pass
 
 # -Tabelle für Profile verknüpfen-
-data_profiles = pd.read_csv("user_management/profiles.csv", sep=';', index_col=0)
+data_profiles = get_dataframe_from_gsheet(GOOGLE_SHEET_PROFILES, index_col=COLUMN_PROFILE_ID)
 
 # -Tabelle für Antworten verknüpfen-
-answers = pd.read_csv("antworten/antworten.csv", sep=';', index_col=0)
+answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
 
 # -Seiteninhalt-
 st.title("User Management")
