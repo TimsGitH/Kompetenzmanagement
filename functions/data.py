@@ -126,7 +126,7 @@ def get_latest_update_time(id):
     filtered_answers = answers[answers["Profil-ID"] == id]
     if len(filtered_answers) == 0:
         return None
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)  # type: ignore
     return sorted_answers["Speicherzeitpunkt"].values[0]
 
 def get_latest_cluster_values(id):
@@ -143,7 +143,7 @@ def get_latest_cluster_values(id):
     filtered_answers = answers[answers["Profil-ID"] == id]
     if len(filtered_answers) == 0:
         return None
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)  # type: ignore
     latest_answer = sorted_answers.iloc[0]
     return calculate_cluster_values(latest_answer)
 
@@ -163,7 +163,7 @@ def get_selected_cluster_values(id, timestamp):
     filtered_answers = answers[(answers["Profil-ID"] == id) & (answers["Speicherzeitpunkt"] == timestamp)]
     if len(filtered_answers) == 0:
         return None
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)  # type: ignore
     latest_answer = sorted_answers.iloc[0]
     return calculate_cluster_values(latest_answer)
 
@@ -205,7 +205,7 @@ def get_cluster_values_over_time(id, cluster_name):
         return pd.DataFrame()
     
     # Nach Zeitpunkt sortieren
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=True)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=True)  # type: ignore
     
     # Cluster-Nummer für die gegebene Kategorie finden
     fragebogen = pd.read_csv(PATH_QUESTIONNAIRE, sep=';', encoding='utf-8')
@@ -237,7 +237,7 @@ def load_bedarfe_from_google():
     Returns:
         pandas.DataFrame: DataFrame mit den Bedarfen für alle Profile
     """
-    # TODO: Implementierung für Google Sheets API
+    # TODO: Implementierung für Google Sheets API oder löschen der Funktion
     # Für jetzt verwenden wir eine lokale CSV-Datei als Platzhalter
     try:
         # Platzhalter - später durch Google Sheets API ersetzen
@@ -267,7 +267,7 @@ def get_bedarfe_for_profile(profile_id):
         return None
     
     # Nehme den neuesten Eintrag (falls mehrere vorhanden)
-    sorted_bedarfe = profile_bedarfe.sort_values(by='Speicherzeitpunkt', ascending=False)
+    sorted_bedarfe = profile_bedarfe.sort_values(by='Speicherzeitpunkt', ascending=False)  # type: ignore
     latest_bedarfe = sorted_bedarfe.iloc[0]
     
     # Extrahiere die Cluster-Bedarfe (cluster1 bis cluster11)
@@ -335,3 +335,122 @@ def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id, timesta
     result_df = result_df.sort_values('Differenz', ascending=True)
     
     return result_df
+
+def calculate_time_differences(profile_id, first_timestamp, second_timestamp):
+    """
+    Berechnet die Differenzen zwischen zwei Zeitpunkten für dasselbe Profil.
+    
+    Args:
+        profile_id: Profil-ID für die die Differenzen berechnet werden sollen
+        first_timestamp: Erster Zeitpunkt
+        second_timestamp: Zweiter Zeitpunkt
+        
+    Returns:
+        pandas.DataFrame: DataFrame mit Cluster-Namen und Differenzen
+    """
+    # Werte für beide Zeitpunkte laden
+    first_values = get_selected_cluster_values(profile_id, first_timestamp)
+    second_values = get_selected_cluster_values(profile_id, second_timestamp)
+    cluster_names = get_cluster_names()
+    
+    # Prüfen ob Werte verfügbar sind
+    if first_values is None or second_values is None or cluster_names is None:
+        return pd.DataFrame()
+    
+    # Differenzen berechnen (Zweiter Zeitpunkt - Erster Zeitpunkt)
+    differences = [second - first for second, first in zip(second_values, first_values)]
+    
+    # DataFrame für das Diagramm erstellen
+    result_df = pd.DataFrame({
+        'Cluster': cluster_names,
+        'Differenz': differences
+    })
+    
+    # Nach Differenz sortieren (größte negative zuerst)
+    result_df = result_df.sort_values('Differenz', ascending=True)
+    
+    return result_df
+
+def create_gap_analysis_chart(differences_df, title, xaxis_title, show_legend=False):
+    """
+    Erstellt ein horizontales Balkendiagramm für Gap-Analysen.
+    
+    Args:
+        differences_df (pandas.DataFrame): DataFrame mit 'Cluster' und 'Differenz' Spalten
+        title (str): Titel des Diagramms
+        xaxis_title (str): Titel der X-Achse
+        show_legend (bool): Ob die Legende angezeigt werden soll
+        
+    Returns:
+        plotly.graph_objects.Figure: Das erstellte Diagramm
+    """
+    import plotly.graph_objects as go
+    
+    if differences_df.empty:
+        return None
+    
+    # Farben für positive/negative Abweichungen
+    colors = ['red' if x < 0 else 'green' for x in differences_df['Differenz']]
+    
+    # Horizontales Barchart erstellen
+    fig = go.Figure()
+    
+    # Balken hinzufügen
+    fig.add_trace(go.Bar(
+        y=differences_df['Cluster'],
+        x=differences_df['Differenz'],
+        orientation='h',
+        marker_color=colors,
+        text=[f'{x:.1f}' for x in differences_df['Differenz']],
+        textposition='auto',
+        textangle=0,
+        name='Differenz'
+    ))
+    
+    # Layout anpassen
+    fig.update_layout(
+        title=title,
+        xaxis_title=xaxis_title,
+        yaxis_title='Cluster',
+        xaxis=dict(
+            zeroline=True,
+            zerolinecolor='black',
+            zerolinewidth=2,
+            range=[differences_df['Differenz'].min() - 0.5, differences_df['Differenz'].max() + 0.5]
+        ),
+        yaxis=dict(
+            autorange='reversed'  # Größte negative Abweichung oben
+        ),
+        height=400,
+        showlegend=show_legend
+    )
+    
+    # Hinzufügen einer vertikalen Linie bei 0
+    fig.add_vline(x=0, line_width=2, line_color="black", line_dash="solid")
+    
+    return fig
+
+def get_gap_analysis_legend(analysis_type="bedarf"):
+    """
+    Gibt die passende Legende für Gap-Analysen zurück.
+    
+    Args:
+        analysis_type (str): Art der Analyse ("bedarf" oder "zeitvergleich")
+        
+    Returns:
+        str: Markdown-formatierte Legende
+    """
+    if analysis_type == "bedarf":
+        return """
+        **Legende:**
+        - 🔴 **Rot**: Negative Abweichung (Ist < Bedarf) - Verbesserungspotential
+        - 🟢 **Grün**: Positive Abweichung (Ist > Bedarf) - Stärke
+        """
+    elif analysis_type == "zeitvergleich":
+        return """
+        **Legende:**
+        - 🔴 **Rot**: Verschlechterung (Später < Früher)
+        - 🟢 **Grün**: Verbesserung (Später > Früher)
+        """
+    else:
+        return ""

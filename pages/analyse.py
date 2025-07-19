@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from functions.menu import default_menu
-from functions.data import get_cluster_names, get_latest_cluster_values, get_selected_cluster_values, get_latest_update_time, get_cluster_values_over_time, get_available_bedarfe_profiles, calculate_cluster_differences
+from functions.data import get_cluster_names, get_latest_cluster_values, get_selected_cluster_values, get_latest_update_time, get_cluster_values_over_time, get_available_bedarfe_profiles, calculate_cluster_differences, create_gap_analysis_chart, get_gap_analysis_legend
 from config import GOOGLE_SHEET_ANSWERS, COLUMN_TIMESTAMP, GOOGLE_SHEET_PROFILES, COLUMN_PROFILE_ID
 from functions.database import get_dataframe_from_gsheet
 
@@ -87,10 +87,10 @@ with st.container():
             st.write("Geburtsdatum: ...")
             st.write(f"Letzte Aktualisierung: {get_latest_update_time(set_id_active_profile)}")
 
-    # -Analysehilfe-
+    # GAP-Analyse
     with cols[1]:
         with st.container(border=False):
-            st.header("Analysehilfe")
+            st.header("GAP-Analyse")
             
             # Verfügbare Bedarfe-Profile laden
             available_bedarfe_profiles = get_available_bedarfe_profiles()
@@ -103,57 +103,24 @@ with st.container():
                     format_func=lambda x: f"Profil {x}"
                 )
                 
-                # Differenzen berechnen
+                # Differenzen berechnen mit modularer Funktion
                 differences_df = calculate_cluster_differences(set_id_active_profile, selected_bedarfe_profile, set_update_time_active_profile)
                 
                 if not differences_df.empty:
-                    # Farben für positive/negative Abweichungen
-                    colors = ['red' if x < 0 else 'green' for x in differences_df['Differenz']]
-                    
-                    # Horizontales Barchart erstellen
-                    fig = go.Figure()
-                    
-                    # Balken hinzufügen
-                    fig.add_trace(go.Bar(
-                        y=differences_df['Cluster'],
-                        x=differences_df['Differenz'],
-                        orientation='h',
-                        marker_color=colors,
-                        text=[f'{x:.1f}' for x in differences_df['Differenz']],
-                        textposition='auto',
-                        textangle=0,
-                        name='Differenz'
-                    ))
-                    
-                    # Layout anpassen
-                    fig.update_layout(
-                        title=f'Differenz: Ist (Profil {set_id_active_profile}) - Bedarf (Profil {selected_bedarfe_profile})',
-                        xaxis_title='Differenz (Ist - Bedarf)',
-                        yaxis_title='Cluster',
-                        xaxis=dict(
-                            zeroline=True,
-                            zerolinecolor='black',
-                            zerolinewidth=2,
-                            range=[differences_df['Differenz'].min() - 0.5, differences_df['Differenz'].max() + 0.5]
-                        ),
-                        yaxis=dict(
-                            autorange='reversed'  # Größte negative Abweichung oben
-                        ),
-                        height=500,
-                        showlegend=False
+                    # Diagramm mit modularer Funktion erstellen
+                    title = f'Differenz: Ist (Profil {set_id_active_profile}) - Bedarf (Profil {selected_bedarfe_profile})'
+                    fig = create_gap_analysis_chart(
+                        differences_df, 
+                        title, 
+                        'Differenz (Ist - Bedarf)',
+                        show_legend=False
                     )
                     
-                    # Hinzufügen einer vertikalen Linie bei 0
-                    fig.add_vline(x=0, line_width=2, line_color="black", line_dash="solid")
-                    
-                    st.plotly_chart(fig, use_container_width=True)
-                    
-                    # Legende
-                    st.markdown("""
-                    **Legende:**
-                    - 🔴 **Rot**: Negative Abweichung (Ist < Bedarf) - Verbesserungspotential
-                    - 🟢 **Grün**: Positive Abweichung (Ist > Bedarf) - Stärke
-                    """)
+                    if fig:
+                        # Höhe für dieses Diagramm anpassen
+                        fig.update_layout(height=500)
+                        st.plotly_chart(fig, use_container_width=True)
+                        st.markdown(get_gap_analysis_legend("bedarf"))
                     
                 else:
                     st.warning("Keine Daten für die Differenzberechnung verfügbar.")
