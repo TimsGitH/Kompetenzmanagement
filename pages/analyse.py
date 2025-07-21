@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 from functions.menu import default_menu
-from functions.data import get_cluster_names, get_latest_cluster_values, get_selected_cluster_values, get_latest_update_time, get_cluster_values_over_time, get_available_bedarfe_profiles, calculate_cluster_differences, create_gap_analysis_chart, get_gap_analysis_legend
+from functions.data import get_cluster_names, get_selected_cluster_values, get_latest_update_time, get_cluster_values_over_time, get_available_bedarfe_profiles, calculate_cluster_differences, create_gap_analysis_chart, get_gap_analysis_legend
 from config import GOOGLE_SHEET_ANSWERS, COLUMN_TIMESTAMP, GOOGLE_SHEET_PROFILES, COLUMN_PROFILE_ID
 from functions.database import get_dataframe_from_gsheet
 
@@ -64,7 +63,7 @@ with st.container():
                     markers=True
                 )
                 
-                # Y-Achse auf 1-5 begrenzen
+                # y-Achse auf 1-5 begrenzen
                 fig.update_layout(
                     yaxis=dict(range=[1, 5]),
                     xaxis=dict(type='linear'),
