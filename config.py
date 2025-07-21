@@ -43,11 +43,11 @@ TRANSLATE_ANSWER_INDEX = {
 }
 
 # Pfade zu Dateien
-PATH_ANSWERS = "antworten/antworten.csv"
 PATH_QUESTIONNAIRE = "fragebögen/2025-06-25_Finalversion_Fragebogen_pro-kom_aufbereitet_UTF-8.csv"
 GOOGLE_SHEET_ANSWERS = "antworten"
 GOOGLE_SHEET_PROFILES = "profile"
 GOOGLE_SHEET_BEDARFE = "bedarfe"
+GOOGLE_SHEET_GENERATED_DATA = "datengenerierung"
 
 # Spaltennamen
 COLUMN_TIMESTAMP = "Speicherzeitpunkt"

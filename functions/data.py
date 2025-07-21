@@ -359,6 +359,7 @@ def calculate_time_differences_bedarfe(data_bedarfe, profile_id, first_timestamp
     Die Werte werden direkt aus der Bedarfe-Tabelle genommen.
     
     Args:
+        data_bedarfe (pandas.DataFrame): DataFrame mit Bedarfs-Daten
         profile_id: Profil-ID für die die Differenzen berechnet werden sollen
         first_timestamp: Erster Zeitpunkt
         second_timestamp: Zweiter Zeitpunkt

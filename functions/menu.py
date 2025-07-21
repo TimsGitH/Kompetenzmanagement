@@ -1,5 +1,4 @@
 import streamlit as st
-from functions.initialize import create_empty_answers_dataframe
 from functions.session_state import clear_session_states, clear_session_states_except_mode_and_debug_mode, change_mode
 
 # -Button Funktionen-
@@ -18,7 +17,6 @@ def debug_menu():
         st.sidebar.write(st.session_state)
         st.sidebar.button(label="Session State löschen (Außer Rolle & Debug Modus)", on_click=clear_session_states_except_mode_and_debug_mode)
         st.sidebar.button(label="Session State vollständig löschen", on_click=clear_session_states)
-        st.sidebar.button(label="Leere Tabelle für Antworten erstellen", on_click=create_empty_answers_dataframe)
         st.sidebar.button(label="Modus wechseln", on_click=change_mode)
 
 def default_menu():
