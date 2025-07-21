@@ -30,6 +30,7 @@ with col1:
     set_first_timestamp_active_profile = st.selectbox("Ersten Zeitpunkt auswählen:", filtered_update_time)
     set_second_timestamp_active_profile = st.selectbox("Zweiten Zeitpunkt auswählen:", filtered_update_time[-1])
 
+
 with col2:
     st.subheader("Bedarf Auswahl:")
     
@@ -75,6 +76,7 @@ with col2:
     st.subheader("Bedarf Entwicklung")
     
     # Differenzen für das Bedarfsprofil berechnen
+    data_bedarfe = data_bedarfe.reset_index()
     differences_bedarf_df = calculate_time_differences_bedarfe(
         data_bedarfe,
         set_bedarf_id,
