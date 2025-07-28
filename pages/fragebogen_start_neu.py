@@ -81,12 +81,15 @@ def click_back():
 def check_demography_complete():
     fehlende_felder = []
     branche = st.session_state.get("answer_0SD01")
+    branche_sonstige = st.session_state.get("answer_0SD01B", "")
     if branche is None:
         fehlende_felder.append("Branche")
-    if branche == "Sonstige": #TODO Wenn Branche nicht sonstige ist, muss 0SD01B leer sein
-        branche_sonstige = st.session_state.get("answer_0SD01B", "")
+    if branche == "Sonstige":
         if branche_sonstige is None or str(branche_sonstige).strip() == "":
             fehlende_felder.append("Branche (Wenn Sonstige)")
+    else:
+        if branche_sonstige is not None and str(branche_sonstige).strip() != "":
+            fehlende_felder.append("'Branche (Wenn Sonstige)' darf nur bei Auswahl von 'Sonstige' befüllt sein)")
     abteilung = st.session_state.get("answer_0SD02", "")
     if abteilung is None or str(abteilung).strip() == "":
         fehlende_felder.append("Abteilung/Bereich")

@@ -1,5 +1,5 @@
 import pandas as pd
-from config import PATH_QUESTIONNAIRE, GOOGLE_SHEET_ANSWERS, COLUMN_INDEX
+from config import PATH_QUESTIONNAIRE, GOOGLE_SHEET_ANSWERS, COLUMN_INDEX, GOOGLE_SHEET_BEDARFE, COLUMN_TIMESTAMP, COLUMN_PROFILE_ID
 from functions.database import get_dataframe_from_gsheet
 
 def get_amount_questions():
@@ -86,19 +86,19 @@ def get_cluster_table():
     cluster_data.set_index("Cluster-Nummer", inplace=True)
     return cluster_data
 
-def get_cluster_values_with_times(id):
+def get_cluster_values_with_times(profil_id):
     """
     Ruft die Cluster-Werte mit entsprechenden Zeitpunkten für eine bestimmte Profil-ID ab.
     
     Args:
-        id: Profil-ID für die die Cluster-Werte abgerufen werden sollen
+        profil_id: Profil-ID für die die Cluster-Werte abgerufen werden sollen
         
     Returns:
         pandas.DataFrame: DataFrame mit Cluster-Werten und Zeitpunkten für die gegebene Profil-ID
     """
     # Funktion zum Abrufen der Cluster-Werte mit entsprechenden Zeitpunkten.
     answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
-    return answers[answers["Profil-ID"] == id]
+    return answers[answers["Profil-ID"] == profil_id]
 
 def get_question_ids():
     """
@@ -111,59 +111,59 @@ def get_question_ids():
     fragebogen = pd.read_csv(PATH_QUESTIONNAIRE, sep=';', encoding='utf-8')
     return fragebogen["Frage-ID"].tolist()
 
-def get_latest_update_time(id):
+def get_latest_update_time(profil_id):
     """
     Ruft den Zeitpunkt des letzten Eintrags für eine bestimmte Profil-ID ab.
     
     Args:
-        id: Profil-ID für die der letzte Eintrag gesucht wird
+        profil_id: Profil-ID für die der letzte Eintrag gesucht wird
         
     Returns:
         str or None: Zeitpunkt des letzten Eintrags oder None falls keine Einträge vorhanden
     """
     # Funktion zum Abrufen des letzten Eintrags für die gegebene ID.
     answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
-    filtered_answers = answers[answers["Profil-ID"] == id]
+    filtered_answers = answers[answers["Profil-ID"] == profil_id]
     if len(filtered_answers) == 0:
         return None
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)  # type: ignore
     return sorted_answers["Speicherzeitpunkt"].values[0]
 
-def get_latest_cluster_values(id):
+def get_latest_cluster_values(profil_id):
     """
     Berechnet die Cluster-Werte aus dem aktuellsten Fragebogen für eine bestimmte Profil-ID.
     
     Args:
-        id: Profil-ID für die die Cluster-Werte berechnet werden sollen
+        profil_id: Profil-ID für die die Cluster-Werte berechnet werden sollen
         
     Returns:
         list or None: Liste der Cluster-Werte oder None falls keine Antworten vorhanden
     """
     answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
-    filtered_answers = answers[answers["Profil-ID"] == id]
+    filtered_answers = answers[answers["Profil-ID"] == profil_id]
     if len(filtered_answers) == 0:
         return None
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)  # type: ignore
     latest_answer = sorted_answers.iloc[0]
     return calculate_cluster_values(latest_answer)
 
 
-def get_selected_cluster_values(id, timestamp):
+def get_selected_cluster_values(profil_id: str | int, timestamp: str) -> list[float] | None:
     """
     Berechnet die Cluster-Werte aus dem aktuellsten Fragebogen für eine bestimmte Profil-ID.
 
     Args:
-        id: Profil-ID für die die Cluster-Werte berechnet werden sollen
+        profil_id: Profil-ID für die die Cluster-Werte berechnet werden sollen
         timestamp: Zeitpunkt für den die Cluster-Werte berechnet werden sollen
 
     Returns:
         list or None: Liste der Cluster-Werte oder None falls keine Antworten vorhanden
     """
     answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
-    filtered_answers = answers[(answers["Profil-ID"] == id) & (answers["Speicherzeitpunkt"] == timestamp)]
+    filtered_answers = answers[(answers["Profil-ID"] == profil_id) & (answers["Speicherzeitpunkt"] == timestamp)]
     if len(filtered_answers) == 0:
         return None
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)  # type: ignore
     latest_answer = sorted_answers.iloc[0]
     return calculate_cluster_values(latest_answer)
 
@@ -186,12 +186,12 @@ def load_profiles_with_ids(csv_path: str) -> list[str]:
         print(f"Error while loading the file: {e}")
         return []
 
-def get_cluster_values_over_time(id, cluster_name):
+def get_cluster_values_over_time(profil_id, cluster_name):
     """
     Berechnet die Cluster-Werte für eine bestimmte Kategorie über die Zeit.
     
     Args:
-        id: Profil-ID für die die Cluster-Werte berechnet werden sollen
+        profil_id: Profil-ID für die die Cluster-Werte berechnet werden sollen
         cluster_name (str): Name der Kategorie/des Clusters
         
     Returns:
@@ -199,13 +199,13 @@ def get_cluster_values_over_time(id, cluster_name):
     """
     # Alle Antworten für die Profil-ID laden
     answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
-    filtered_answers = answers[answers["Profil-ID"] == id]
+    filtered_answers = answers[answers["Profil-ID"] == profil_id]
     
     if len(filtered_answers) == 0:
         return pd.DataFrame()
     
     # Nach Zeitpunkt sortieren
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=True)
+    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=True)  # type: ignore
     
     # Cluster-Nummer für die gegebene Kategorie finden
     fragebogen = pd.read_csv(PATH_QUESTIONNAIRE, sep=';', encoding='utf-8')
@@ -230,24 +230,6 @@ def get_cluster_values_over_time(id, cluster_name):
     
     return result_df
 
-def load_bedarfe_from_google():
-    """
-    Lädt die Bedarfe aus der Google Tabelle.
-    
-    Returns:
-        pandas.DataFrame: DataFrame mit den Bedarfen für alle Profile
-    """
-    # TODO: Implementierung für Google Sheets API
-    # Für jetzt verwenden wir eine lokale CSV-Datei als Platzhalter
-    try:
-        # Platzhalter - später durch Google Sheets API ersetzen
-        bedarfe_df = pd.read_csv("bedarfe/bedarfe.csv", sep=';', index_col=0)
-        return bedarfe_df
-    except FileNotFoundError:
-        # Fallback: Erstelle leeren DataFrame mit korrekter Struktur
-        columns = ['Speicherzeitpunkt', 'Profil-ID'] + [f'cluster{i}' for i in range(1, 12)]
-        return pd.DataFrame(columns=columns, data=[])
-
 def get_bedarfe_for_profile(profile_id):
     """
     Ruft die Bedarfe für eine bestimmte Profil-ID ab.
@@ -258,7 +240,7 @@ def get_bedarfe_for_profile(profile_id):
     Returns:
         list or None: Liste der Bedarfe für alle 11 Cluster oder None falls nicht gefunden
     """
-    bedarfe_df = load_bedarfe_from_google()
+    bedarfe_df = get_dataframe_from_gsheet(GOOGLE_SHEET_BEDARFE, index_col=COLUMN_TIMESTAMP)
     
     # Suche nach der Profil-ID
     profile_bedarfe = bedarfe_df[bedarfe_df['Profil-ID'] == profile_id]
@@ -267,7 +249,7 @@ def get_bedarfe_for_profile(profile_id):
         return None
     
     # Nehme den neuesten Eintrag (falls mehrere vorhanden)
-    sorted_bedarfe = profile_bedarfe.sort_values(by='Speicherzeitpunkt', ascending=False)
+    sorted_bedarfe = profile_bedarfe.sort_values(by='Speicherzeitpunkt', ascending=False)  # type: ignore
     latest_bedarfe = sorted_bedarfe.iloc[0]
     
     # Extrahiere die Cluster-Bedarfe (cluster1 bis cluster11)
@@ -284,13 +266,13 @@ def get_available_bedarfe_profiles():
     Returns:
         list: Liste der verfügbaren Profil-IDs
     """
-    bedarfe_df = load_bedarfe_from_google()
+    bedarfe_df = get_dataframe_from_gsheet(GOOGLE_SHEET_BEDARFE, index_col=COLUMN_PROFILE_ID)
     
     if bedarfe_df.empty:
         return []
     
     # Extrahiere eindeutige Profil-IDs
-    available_profiles = bedarfe_df['Profil-ID'].unique().tolist()
+    available_profiles = bedarfe_df.index.unique().tolist()
     return sorted(available_profiles)
 
 def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id, timestamp):
@@ -335,3 +317,163 @@ def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id, timesta
     result_df = result_df.sort_values('Differenz', ascending=True)
     
     return result_df
+
+def calculate_time_differences(profile_id, first_timestamp, second_timestamp):
+    """
+    Berechnet die Differenzen zwischen zwei Zeitpunkten für dasselbe Profil.
+    
+    Args:
+        profile_id: Profil-ID für die die Differenzen berechnet werden sollen
+        first_timestamp: Erster Zeitpunkt
+        second_timestamp: Zweiter Zeitpunkt
+        
+    Returns:
+        pandas.DataFrame: DataFrame mit Cluster-Namen und Differenzen
+    """
+    # Werte für beide Zeitpunkte laden
+    first_values = get_selected_cluster_values(profile_id, first_timestamp)
+    second_values = get_selected_cluster_values(profile_id, second_timestamp)
+    cluster_names = get_cluster_names()
+    
+    # Prüfen ob Werte verfügbar sind
+    if first_values is None or second_values is None or cluster_names is None:
+        return pd.DataFrame()
+    
+    # Differenzen berechnen (Zweiter Zeitpunkt - Erster Zeitpunkt)
+    differences = [second - first for second, first in zip(second_values, first_values)]
+    
+    # DataFrame für das Diagramm erstellen
+    result_df = pd.DataFrame({
+        'Cluster': cluster_names,
+        'Differenz': differences
+    })
+    
+    # Nach Differenz sortieren (größte negative zuerst)
+    result_df = result_df.sort_values('Differenz', ascending=True)
+    
+    return result_df
+
+def calculate_time_differences_bedarfe(data_bedarfe, profile_id, first_timestamp, second_timestamp):
+    """
+    Berechnet die Differenzen zwischen zwei Zeitpunkten für dasselbe Bedarfs-Profil.
+    Die Werte werden direkt aus der Bedarfe-Tabelle genommen.
+    
+    Args:
+        data_bedarfe (pandas.DataFrame): DataFrame mit Bedarfs-Daten
+        profile_id: Profil-ID für die die Differenzen berechnet werden sollen
+        first_timestamp: Erster Zeitpunkt
+        second_timestamp: Zweiter Zeitpunkt
+        
+    Returns:
+        pandas.DataFrame: DataFrame mit Cluster-Namen und Differenzen
+    """
+    bedarfe_df = data_bedarfe
+    # Werte für beide Zeitpunkte und Profil-ID filtern
+    first_row = bedarfe_df[(bedarfe_df['Profil-ID'] == profile_id) & (bedarfe_df['Speicherzeitpunkt'] == first_timestamp)]
+    second_row = bedarfe_df[(bedarfe_df['Profil-ID'] == profile_id) & (bedarfe_df['Speicherzeitpunkt'] == second_timestamp)]
+    cluster_names = get_cluster_names()
+    
+    if first_row.empty or second_row.empty or cluster_names is None:
+        return pd.DataFrame()
+    
+    # Werte extrahieren
+    first_values = [float(first_row.iloc[0][f'cluster{i}']) for i in range(1, len(cluster_names)+1)]
+    second_values = [float(second_row.iloc[0][f'cluster{i}']) for i in range(1, len(cluster_names)+1)]
+    
+    # Differenzen berechnen (Zweiter Zeitpunkt - Erster Zeitpunkt)
+    differences = [second - first for second, first in zip(second_values, first_values)]
+    
+    # DataFrame für das Diagramm erstellen
+    result_df = pd.DataFrame({
+        'Cluster': cluster_names,
+        'Differenz': differences
+    })
+    
+    # Nach Differenz sortieren (größte negative zuerst)
+    result_df = result_df.sort_values('Differenz', ascending=True)
+    
+    return result_df
+
+def create_gap_analysis_chart(differences_df, title, xaxis_title, show_legend=False):
+    """
+    Erstellt ein horizontales Balkendiagramm für Gap-Analysen.
+    
+    Args:
+        differences_df (pandas.DataFrame): DataFrame mit 'Cluster' und 'Differenz' Spalten
+        title (str): Titel des Diagramms
+        xaxis_title (str): Titel der X-Achse
+        show_legend (bool): Ob die Legende angezeigt werden soll
+        
+    Returns:
+        plotly.graph_objects.Figure: Das erstellte Diagramm
+    """
+    import plotly.graph_objects as go
+    
+    if differences_df.empty:
+        return None
+    
+    # Farben für positive/negative Abweichungen
+    colors = ['red' if x < 0 else 'green' for x in differences_df['Differenz']]
+    
+    # Horizontales Barchart erstellen
+    fig = go.Figure()
+    
+    # Balken hinzufügen
+    fig.add_trace(go.Bar(
+        y=differences_df['Cluster'],
+        x=differences_df['Differenz'],
+        orientation='h',
+        marker_color=colors,
+        text=[f'{x:.1f}' for x in differences_df['Differenz']],
+        textposition='auto',
+        textangle=0,
+        name='Differenz'
+    ))
+    
+    # Layout anpassen
+    fig.update_layout(
+        title=title,
+        xaxis_title=xaxis_title,
+        yaxis_title='Cluster',
+        xaxis=dict(
+            zeroline=True,
+            zerolinecolor='black',
+            zerolinewidth=2,
+            range=[differences_df['Differenz'].min() - 0.5, differences_df['Differenz'].max() + 0.5]
+        ),
+        yaxis=dict(
+            autorange='reversed'  # Größte negative Abweichung oben
+        ),
+        height=400,
+        showlegend=show_legend
+    )
+    
+    # Hinzufügen einer vertikalen Linie bei 0
+    fig.add_vline(x=0, line_width=2, line_color="black", line_dash="solid")
+    
+    return fig
+
+def get_gap_analysis_legend(analysis_type="bedarf"):
+    """
+    Gibt die passende Legende für Gap-Analysen zurück.
+    
+    Args:
+        analysis_type (str): Art der Analyse ("bedarf" oder "zeitvergleich")
+        
+    Returns:
+        str: Markdown-formatierte Legende
+    """
+    if analysis_type == "bedarf":
+        return """
+        **Legende:**
+        - 🔴 **Rot**: Negative Abweichung (Ist < Bedarf) - Verbesserungspotential
+        - 🟢 **Grün**: Positive Abweichung (Ist > Bedarf) - Stärke
+        """
+    elif analysis_type == "zeitvergleich":
+        return """
+        **Legende:**
+        - 🔴 **Rot**: Verschlechterung (Später < Früher)
+        - 🟢 **Grün**: Verbesserung (Später > Früher)
+        """
+    else:
+        return ""
