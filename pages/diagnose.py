@@ -22,13 +22,13 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("Profil Auswahl:")
     # Profil auswählen
-    set_name_active_profile = st.selectbox("Profil auswählen:", data_profiles[["Name"]])
+    set_name_active_profile = st.selectbox("Profil auswählen:", data_profiles[["Name"]], key="profil_auswahl_1")
     set_id_active_profile = data_profiles.index[data_profiles["Name"] == set_name_active_profile][0]
 
     # Zeitpunkt auswählen
     filtered_update_time = data_answers.index[data_answers["Profil-ID"] == set_id_active_profile]
-    set_first_timestamp_active_profile = st.selectbox("Ersten Zeitpunkt auswählen:", filtered_update_time)
-    set_second_timestamp_active_profile = st.selectbox("Zweiten Zeitpunkt auswählen:", filtered_update_time[-1])
+    set_first_timestamp_active_profile = st.selectbox("Ersten Zeitpunkt auswählen:", filtered_update_time, key="erster_zeitpunkt_1")
+    set_second_timestamp_active_profile = st.selectbox("Zweiten Zeitpunkt auswählen:", filtered_update_time[-1], key="zweiter_zeitpunkt_1")
 
 
 with col2:
@@ -36,12 +36,12 @@ with col2:
     
     # Bedarf auswählen
     unique_bedarf_ids = data_bedarfe["Profil-ID"].unique().tolist()
-    set_bedarf_id = st.selectbox("Bedarf auswählen:", unique_bedarf_ids)
+    set_bedarf_id = st.selectbox("Bedarf auswählen:", unique_bedarf_ids, key="bedarf_auswahl_1")
 
     # Zeitpunkt auswählen
     filtered_timestamps_bedarf = data_bedarfe.index[data_bedarfe["Profil-ID"] == set_bedarf_id]
-    set_first_timestamp_bedarf = st.selectbox("Ersten Zeitpunkt auswählen:", filtered_timestamps_bedarf)
-    set_second_timestamp_bedarf = st.selectbox("Zweiten Zeitpunkt auswählen:", filtered_timestamps_bedarf[-1])
+    set_first_timestamp_bedarf = st.selectbox("Ersten Zeitpunkt auswählen:", filtered_timestamps_bedarf, key="erster_zeitpunkt_2")
+    set_second_timestamp_bedarf = st.selectbox("Zweiten Zeitpunkt auswählen:", filtered_timestamps_bedarf[-1], key="zweiter_zeitpunkt_2")
 
 
 # Erste Zeile mit zwei Diagrammen
