@@ -86,20 +86,6 @@ def get_cluster_table():
     cluster_data.set_index("Cluster-Nummer", inplace=True)
     return cluster_data
 
-def get_cluster_values_with_times(profil_id):
-    """
-    Ruft die Cluster-Werte mit entsprechenden Zeitpunkten für eine bestimmte Profil-ID ab.
-    
-    Args:
-        profil_id: Profil-ID für die die Cluster-Werte abgerufen werden sollen
-        
-    Returns:
-        pandas.DataFrame: DataFrame mit Cluster-Werten und Zeitpunkten für die gegebene Profil-ID
-    """
-    # Funktion zum Abrufen der Cluster-Werte mit entsprechenden Zeitpunkten.
-    answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
-    return answers[answers["Profil-ID"] == profil_id]
-
 def get_question_ids():
     """
     Ruft alle Frage-IDs aus dem Fragebogen als Liste ab.
