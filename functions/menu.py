@@ -32,7 +32,7 @@ def default_menu():
         st.sidebar.page_link("pages/export.py", label="Export")
     elif st.session_state.mode == "fragebogen":
         st.sidebar.header("Navigation")
-        st.sidebar.page_link("pages/fragebogen_start.py", label="Fragebogen - Beginn")
+        st.sidebar.page_link("pages/fragebogen_start.py", label="Fragebogen")
         st.sidebar.page_link("pages/export.py", label="Export")
         st.sidebar.page_link("pages/datengenerierung.py", label="Datengenerierung")
     debug_menu()
@@ -48,6 +48,6 @@ def no_menu():
             if st.session_state.mode == "analyse":
                 st.switch_page("pages/kompetenzbeurteilung.py")
             elif st.session_state.mode == "fragebogen":
-                st.switch_page("pages/fragebogen_start_neu.py")
+                st.switch_page("pages/fragebogen_start.py")
     debug_menu()
 

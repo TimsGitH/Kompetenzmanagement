@@ -110,8 +110,7 @@ question_ids = get_question_ids()
 
 # -Titel-
 st.title("Fragebogen")
-st.write(f"Profil: {st.session_state.name_active_profile}")
-st.write(f"Profil-ID: {st.session_state.id_active_profile}")
+st.write(f"Profil-ID: {st.session_state.id_active_profile if st.session_state.id_active_profile is not None else 'Keine'}")
 st.write(f"Anzahl Fragen: {amount_questions}")
 
 # -Anzahl der Seiten berechnen-
