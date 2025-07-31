@@ -145,13 +145,25 @@ def get_selected_cluster_values(profil_id: str | int, timestamp: str) -> list[fl
     Returns:
         list or None: Liste der Cluster-Werte oder None falls keine Antworten vorhanden
     """
+    # TODO: answers als Parameter übergeben, damit nicht jedes Mal neu geladen wird. Alle Funktionen, die diese Funktion aufrufen, müssen angepasst werden.
     answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
-    filtered_answers = answers[(answers["Profil-ID"] == profil_id) & (answers["Speicherzeitpunkt"] == timestamp)]
-    if len(filtered_answers) == 0:
+
+    # Filtere die Antworten nach Profil-ID und Zeitpunkt
+    filtered_answers = answers[
+        (answers["Profil-ID"] == profil_id) &
+        (answers["Speicherzeitpunkt"] == timestamp)
+    ]
+
+    if filtered_answers.empty:
         return None
-    sorted_answers = filtered_answers.sort_values(by="Speicherzeitpunkt", ascending=False)  # type: ignore
-    latest_answer = sorted_answers.iloc[0]
-    return calculate_cluster_values(latest_answer)
+
+    latest_answer = filtered_answers.iloc[0]
+
+    try:
+        return calculate_cluster_values(latest_answer)
+    except Exception as e:
+        print(f"Fehler bei der Cluster-Berechnung für Profil {profil_id}: {e}")
+        return None
 
 def load_profiles_with_ids(csv_path: str) -> list[str]:
     """
@@ -184,6 +196,7 @@ def get_cluster_values_over_time(profil_id, cluster_name):
         pandas.DataFrame: DataFrame mit Zeitpunkten und Cluster-Werten für die gegebene Kategorie
     """
     # Alle Antworten für die Profil-ID laden
+    # TODO: answers als Parameter übergeben, damit nicht jedes Mal neu geladen wird. Alle Funktionen, die diese Funktion aufrufen, müssen angepasst werden.
     answers = get_dataframe_from_gsheet(GOOGLE_SHEET_ANSWERS, index_col=COLUMN_INDEX)
     filtered_answers = answers[answers["Profil-ID"] == profil_id]
     
@@ -216,43 +229,48 @@ def get_cluster_values_over_time(profil_id, cluster_name):
     
     return result_df
 
-def get_bedarfe_for_profile(profile_id):
+def get_bedarfe_for_profile(profile_id: str | int, timestamp: str) -> list[float] | None:
     """
     Ruft die Bedarfe für eine bestimmte Profil-ID ab.
     
     Args:
         profile_id: Profil-ID für die die Bedarfe abgerufen werden sollen
+        timestamp: Zeitpunkt für den die Bedarfe abgerufen werden sollen
         
     Returns:
         list or None: Liste der Bedarfe für alle 11 Cluster oder None falls nicht gefunden
     """
-    bedarfe_df = get_dataframe_from_gsheet(GOOGLE_SHEET_BEDARFE, index_col=COLUMN_TIMESTAMP)
-    
-    # Suche nach der Profil-ID
-    profile_bedarfe = bedarfe_df[bedarfe_df['Profil-ID'] == profile_id]
-    
-    if len(profile_bedarfe) == 0:
+    #TODO: bedarfe_df als Parameter übergeben, damit nicht jedes Mal neu geladen wird. Alle Funktionen, die diese Funktion aufrufen, müssen angepasst werden.
+    bedarfe_df = get_dataframe_from_gsheet(GOOGLE_SHEET_BEDARFE, index_col=COLUMN_INDEX)
+
+    # Filtere nach Profil-ID und Zeitpunkt
+    filtered_bedarf = bedarfe_df[
+        (bedarfe_df["Profil-ID"] == profile_id) &
+        (bedarfe_df["Speicherzeitpunkt"] == timestamp)
+        ]
+
+    if filtered_bedarf.empty:
         return None
-    
-    # Nehme den neuesten Eintrag (falls mehrere vorhanden)
-    sorted_bedarfe = profile_bedarfe.sort_values(by='Speicherzeitpunkt', ascending=False)  # type: ignore
-    latest_bedarfe = sorted_bedarfe.iloc[0]
+
+    latest_bedarf = filtered_bedarf.iloc[0]
     
     # Extrahiere die Cluster-Bedarfe (cluster1 bis cluster11)
     cluster_bedarfe = []
     for i in range(1, 12):
-        cluster_bedarfe.append(latest_bedarfe[f'cluster{i}'])
+        cluster_bedarfe.append(latest_bedarf[f'cluster{i}'])
     
     return cluster_bedarfe
 
-def get_available_bedarfe_profiles():
+def get_available_bedarfe_profiles(bedarfe_df: pd.DataFrame) -> list:
     """
     Ruft alle verfügbaren Profil-IDs aus der Bedarfe-Tabelle ab.
+
+    Args:
+        bedarfe_df (pandas.DataFrame): DataFrame mit Bedarfs-Daten
     
     Returns:
         list: Liste der verfügbaren Profil-IDs
     """
-    bedarfe_df = get_dataframe_from_gsheet(GOOGLE_SHEET_BEDARFE, index_col=COLUMN_PROFILE_ID)
     
     if bedarfe_df.empty:
         return []
@@ -261,26 +279,27 @@ def get_available_bedarfe_profiles():
     available_profiles = bedarfe_df.index.unique().tolist()
     return sorted(available_profiles)
 
-def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id, timestamp):
+def calculate_cluster_differences(actual_profile_id, bedarfe_profile_id, profil_timestamp, bedarfe_timestamp):
     """
     Berechnet die Differenzen zwischen tatsächlichen Cluster-Werten und Bedarfen.
     
     Args:
-        actual_profile_id: Profil-ID für die tatsächlichen Werte
+        actual_profile_id: Profil-ID für die Profil Werte
         bedarfe_profile_id: Profil-ID für die Bedarfe
-        timestamp: Speicherzeitpunkt der tatsächlichen Werte
+        profil_timestamp: Speicherzeitpunkt der Profil Werte
+        bedarfe_timestamp: Speicherzeitpunkt der Bedarfe
         
     Returns:
         pandas.DataFrame: DataFrame mit Cluster-Namen und Differenzen
     """
     # Aktuelle Cluster-Werte laden
     #actual_values = get_latest_cluster_values(actual_profile_id)
-    actual_values = get_selected_cluster_values(actual_profile_id, timestamp)
+    actual_values = get_selected_cluster_values(actual_profile_id, profil_timestamp)
     if actual_values is None:
         return pd.DataFrame()
     
     # Bedarfe laden
-    bedarfe_values = get_bedarfe_for_profile(bedarfe_profile_id)
+    bedarfe_values = get_bedarfe_for_profile(bedarfe_profile_id, bedarfe_timestamp)
     if bedarfe_values is None:
         return pd.DataFrame()
     

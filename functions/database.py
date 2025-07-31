@@ -10,12 +10,12 @@ def connect_to_gsheet():
 
 def get_dataframe_from_gsheet(worksheet_name, index_col = None, refresh_time_in_minutes = 30):
     """
-    Lädt einen DataFrame aus der Google Tabelle.
+    Lädt einen DataFrame aus der Google Tabelle und setzt optional eine Spalte als Index.
     
     Args:
         worksheet_name (str): Der Name des Arbeitsblatts.
         index_col (int oder str, optional): Die Spalte, die als Index gesetzt werden soll. Standard ist 0 (erste Spalte).
-    
+        refresh_time_in_minutes (int, optional): Die Zeit in Minuten, nach der die Daten aktualisiert werden sollen. Standard ist 30 Minuten.
     Returns:
         pd.DataFrame: Ein DataFrame, der die Daten aus dem angegebenen Arbeitsblatt enthält.
     """

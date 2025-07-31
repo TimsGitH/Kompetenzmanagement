@@ -4,7 +4,7 @@ import plotly.express as px
 from functions.menu import default_menu
 from config import GOOGLE_SHEET_PROFILES, COLUMN_PROFILE_ID, GOOGLE_SHEET_ANSWERS, COLUMN_TIMESTAMP, GOOGLE_SHEET_BEDARFE
 from functions.database import get_dataframe_from_gsheet
-from functions.data import calculate_time_differences, create_gap_analysis_chart, get_available_bedarfe_profiles, get_gap_analysis_legend, calculate_time_differences_bedarfe
+from functions.data import calculate_time_differences, create_gap_analysis_chart, get_gap_analysis_legend, calculate_time_differences_bedarfe
 
 # -Seitenkonfiguration-
 st.set_page_config(page_title="Diagnose", layout="wide")
@@ -20,8 +20,8 @@ data_bedarfe = get_dataframe_from_gsheet(GOOGLE_SHEET_BEDARFE, index_col=COLUMN_
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("Profil Auswahl:")
     # Profil auswählen
+    st.subheader("Profil Auswahl:")
     set_name_active_profile = st.selectbox("Profil auswählen:", data_profiles[["Name"]], key="profil_auswahl_1")
     set_id_active_profile = data_profiles.index[data_profiles["Name"] == set_name_active_profile][0]
 
